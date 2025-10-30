@@ -1,3 +1,5 @@
+import { EventEmitter } from '../components/base/events';
+
 export type ProductList = {
 	total: number;
 	items: Product[];
@@ -28,3 +30,11 @@ export type ProductCategory =
 	| 'другое'
 	| 'хард-скил'
 	| 'другое';
+
+export type BasketModel = {
+	items: Map<string, number>;
+	add: (id: string) => void;
+	remove: (id: string) => void;
+	events: EventEmitter;
+};
+
