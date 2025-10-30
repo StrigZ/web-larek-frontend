@@ -38,3 +38,10 @@ export type BasketModel = {
 	events: EventEmitter;
 };
 
+export type CatalogModel<T> = {
+	items: T[];
+	setItems: (items: T[]) => void;
+	getItemById: (id: string) => T | undefined;
+	getItems: () => T[];
+	events: EventEmitter;
+};
