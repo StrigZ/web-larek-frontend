@@ -1,14 +1,7 @@
 import { apiClient } from './components/base/api';
 import './scss/styles.scss';
-import { Product, ProductCategory, ProductList } from './types';
+import { Product, ProductList } from './types';
 import { CDN_URL } from './utils/constants';
-import { createElement } from './utils/utils';
-
-const cardTemplate = document.querySelector(
-	'#card-catalog'
-) as HTMLTemplateElement | null;
-
-const gallery = document.querySelector('.gallery');
 
 async function fetchProducts() {
 	return await apiClient.get<ProductList>('/product/');
@@ -39,18 +32,44 @@ function createProductCard({
 
 	return card;
 }
-function populateGallery() {
-	if (!cardTemplate) return;
+function populateGallery({
+	products,
+	galleryQuery,
+	cardTemplateQuery,
+}: {
+	galleryQuery: string;
+	cardTemplateQuery: string;
+	products: Product[];
+}) {
+	const gallery = document.querySelector(`${galleryQuery}`);
+	if (!gallery) {
+		throw new Error('populateGallery: Gallery element was not found!');
+	}
 
-	fetchProducts().then((products) =>
-		products.items.forEach((data) =>
-			gallery?.append(
-				createProductCard({
-					cardTemplate,
-					...data,
-				})
-			)
+	const cardTemplate = document.querySelector(
+		`${cardTemplateQuery}`
+	) as HTMLTemplateElement | null;
+
+	if (!cardTemplate) {
+		throw new Error('populateGallery: Card template element was not found!');
+	}
+
+	products.forEach((data) =>
+		gallery.append(
+			createProductCard({
+				cardTemplate,
+				...data,
+			})
 		)
 	);
 }
-populateGallery();
+
+fetchProducts()
+	.then((products) =>
+		populateGallery({
+			galleryQuery: '.gallery',
+			cardTemplateQuery: '#card-catalog',
+			products: products.items,
+		})
+	)
+	.catch((e) => console.error(e));
