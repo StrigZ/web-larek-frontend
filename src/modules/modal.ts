@@ -24,7 +24,6 @@ export class ModalManager {
 		modal.classList.add(this.activeModalClass);
 	}
 	closeModal(modal: Element) {
-		console.log(modal, this.activeModalClass);
 		modal.classList.remove(this.activeModalClass);
 	}
 	attachListenersToModals() {

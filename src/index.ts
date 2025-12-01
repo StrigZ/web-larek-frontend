@@ -22,6 +22,8 @@ const modalManager = new ModalManager({
 });
 const previewCardModal = document.querySelector('.modal:has(.card)');
 
+const openBasketButton = document.querySelector('.header__basket');
+const basketModal = document.querySelector('.modal:has(.basket)');
 async function fetchProducts() {
 	return await apiClient.get<ProductList>('/product/');
 }
@@ -54,6 +56,33 @@ function createProductCard({
 
 	cardElement.addEventListener('click', () =>
 		appState.events.emit('card:click', { id })
+	);
+	return cardElement;
+}
+
+function createBasketProductCard({
+	data,
+	template,
+}: {
+	data: Pick<Product, 'price' | 'title' | 'id'> & { index: string };
+	template: HTMLTemplateElement;
+}) {
+	const { index, price, title, id } = data;
+	const card = template.content.cloneNode(true) as DocumentFragment;
+	const titleEl = card.querySelector('.card__title');
+	const priceEl = card.querySelector('.card__price');
+	const indexEl = card.querySelector('.basket__item-index');
+	const deleteButton = card.querySelector('.basket__item-delete  ');
+	if (!indexEl || !priceEl || !titleEl || !deleteButton) {
+		throw new Error('Required card elements not found');
+	}
+	const cardElement = card.querySelector('.card') as HTMLElement;
+
+	titleEl.textContent = title;
+	priceEl.textContent = price ? `${price.toString()} синапсов` : 'Бесценно';
+	indexEl.textContent = index;
+	deleteButton.addEventListener('click', () =>
+		appState.events.emit('basket:remove', { id })
 	);
 	return cardElement;
 }
@@ -141,10 +170,50 @@ function showCardPreview(cardData: Product) {
 	}
 
 	populatePreviewCard({ previewCardEl: previewCardContainer, data: cardData });
-	console.log(previewCardModal);
 
 	modalManager.showModal(previewCardModal);
 }
+
+function populateBasket({
+	itemsMap,
+	modal,
+}: {
+	modal: Element;
+	itemsMap: Map<string, number>;
+}) {
+	const itemListEl = modal.querySelector('.basket__list');
+	if (!itemListEl) {
+		throw new Error('populateBasket: item list element was not found!');
+	}
+	const basketCardTemplate = document.querySelector(
+		'#card-basket'
+	) as HTMLTemplateElement | null;
+	if (!basketCardTemplate) {
+		throw new Error('populateBasket: basket card template was not found!');
+	}
+
+	itemListEl.innerHTML = '';
+
+	Array.from(itemsMap).forEach(([id, index]) =>
+		itemListEl.append(
+			createBasketProductCard({
+				template: basketCardTemplate,
+				data: { index: index.toString(), ...appState.catalog.getItemById(id) },
+			})
+		)
+	);
+}
+
+function showBasket() {
+	if (!basketModal) {
+		throw new Error('showBasket: Basket modal was not found!');
+	}
+
+	populateBasket({ modal: basketModal, itemsMap: appState.basket.items });
+	modalManager.showModal(basketModal);
+}
+
+openBasketButton?.addEventListener('click', () => showBasket());
 
 appState.events.on('card:click', (event) => {
 	if ('id' in event && typeof event.id == 'string') {
@@ -157,7 +226,12 @@ appState.events.on('basket:add', (event) => {
 		appState.basket.add((event.productData as Product).id);
 	}
 });
-
+appState.events.on('basket:remove', (event) => {
+	if ('id' in event && typeof event.id == 'string') {
+		appState.basket.remove(event.id);
+		populateBasket({ modal: basketModal!, itemsMap: appState.basket.items });
+	}
+});
 modalManager.attachListenersToModals();
 fetchProducts()
 	.then((products) => {
