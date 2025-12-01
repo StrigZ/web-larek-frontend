@@ -41,7 +41,7 @@ export type BasketModel = {
 export type CatalogModel<T> = {
 	items: T[];
 	setItems: (items: T[]) => void;
-	getItemById: (id: string) => T | undefined;
+	getItemById: (id: string) => T;
 	getItems: () => T[];
 	events: EventEmitter;
 };

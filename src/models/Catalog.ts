@@ -15,7 +15,14 @@ export class Catalog<T extends { id: string }> implements CatalogModel<T> {
 		this._loaded();
 	}
 	getItemById(id: string) {
-		return this.items.find((item) => item.id === id);
+		const item = this.items.find((item) => item.id === id);
+		if (!item) {
+			throw new Error(
+				"Catalog:getItemById: Item with this id doesn't exist: " + id
+			);
+		}
+
+		return item;
 	}
 	getItems() {
 		return this.items;

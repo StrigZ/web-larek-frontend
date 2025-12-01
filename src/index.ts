@@ -8,9 +8,13 @@ import { Product, ProductList } from './types';
 import { CDN_URL } from './utils/constants';
 
 const eventEmitter = new EventEmitter();
-const basket = new Basket(eventEmitter);
-const catalog = new Catalog<Product>(eventEmitter);
-const appState = new AppState(basket, catalog, eventEmitter);
+const appState = new AppState(
+	new Basket(eventEmitter),
+	new Catalog<Product>(eventEmitter),
+	eventEmitter
+);
+
+const previewCardModal = document.querySelector('.modal:has(.card)');
 
 async function fetchProducts() {
 	return await apiClient.get<ProductList>('/product/');
@@ -107,41 +111,21 @@ function populateGallery({
 	);
 }
 
-function showCardPreview({ id }: { id: string }) {
-	const cardData = appState.catalog.getItemById(id);
-	if (!cardData) {
-		throw new Error('showCardPreview: Preview Card data was not found!');
+function showCardPreview(cardData: Product) {
+	if (!previewCardModal) {
+		throw new Error("showCardPreview: previewCardModal doesn't exist");
 	}
 
-	const modalContainer = document.querySelector('.modal:has(.card)');
-	if (!modalContainer) {
-		throw new Error(
-			'showCardPreview: Preview card modal container was not found!'
-		);
-	}
-	modalContainer.addEventListener('click', () =>
-		appState.events.emit('preview:close', { modal: modalContainer })
-	);
-
-	const closeButton = modalContainer.querySelector('.modal__close');
-	if (!closeButton) {
-		throw new Error('showCardPreview: close button was not found!');
-	}
-	closeButton.addEventListener('click', () =>
-		appState.events.emit('preview:close', { modal: modalContainer })
-	);
-
-	const previewCardContainer = modalContainer.querySelector('.card');
+	const previewCardContainer = previewCardModal.querySelector('.card');
 	if (!previewCardContainer) {
 		throw new Error(
 			"showCardPreview: Preview card modal container doesn't have .card child!"
 		);
 	}
-	previewCardContainer.addEventListener('click', (e) => e.stopPropagation());
 
 	populatePreviewCard({ previewCardEl: previewCardContainer, data: cardData });
 
-	modalContainer.classList.add('modal_active');
+	previewCardModal.classList.add('modal_active');
 }
 
 function closeModal(modalEl: HTMLElement) {
@@ -150,7 +134,8 @@ function closeModal(modalEl: HTMLElement) {
 
 appState.events.on('card:click', (event) => {
 	if ('id' in event && typeof event.id == 'string') {
-		showCardPreview({ id: event.id });
+		const cardData = appState.catalog.getItemById(event.id);
+		showCardPreview(cardData);
 	}
 });
 appState.events.on('preview:close', (event) => {
@@ -159,6 +144,31 @@ appState.events.on('preview:close', (event) => {
 	}
 });
 
+function attachListenersToModals() {
+	const modals = document.querySelectorAll('.modal');
+	modals.forEach((modal) => {
+		modal.addEventListener('click', () =>
+			appState.events.emit('preview:close', { modal })
+		);
+		const closeButton = modal.querySelector('.modal__close');
+		if (!closeButton) {
+			throw new Error('attachListenersToModals: close button was not found!');
+		}
+		closeButton.addEventListener('click', () =>
+			appState.events.emit('preview:close', { modal })
+		);
+
+		const previewCardContainer = modal.querySelector('.modal__container');
+		if (!previewCardContainer) {
+			throw new Error(
+				"attachListenersToModals: Modal doesn't have modal container!"
+			);
+		}
+		previewCardContainer.addEventListener('click', (e) => e.stopPropagation());
+	});
+}
+
+attachListenersToModals();
 fetchProducts()
 	.then((products) => {
 		appState.catalog.setItems(products.items);
