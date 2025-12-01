@@ -45,3 +45,20 @@ export type CatalogModel<T> = {
 	getItems: () => T[];
 	events: EventEmitter;
 };
+
+export type PaymentVariant = 'Онлайн' | 'При получениее';
+
+export type OrderDetails = {
+	paymentVariant: PaymentVariant;
+	address: string;
+	email: string;
+	phoneNumber: string;
+};
+
+export type AppStateModel<T> = {
+	basket: BasketModel;
+	catalog: CatalogModel<T>;
+	orderDetails: OrderDetails;
+	events: EventEmitter;
+	setOrderDetails: (details: Partial<OrderDetails>) => void;
+};
