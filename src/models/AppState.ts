@@ -19,8 +19,8 @@ export class AppState<T> implements AppStateModel<T> {
 		events: EventEmitter
 	) {
 		this.basket = basket;
-		this.catalog = catalog;
 		this.events = events;
+		this.catalog = catalog;
 		this.orderDetails = DEFAULT_ORDER_DETAILS;
 	}
 
