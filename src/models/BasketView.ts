@@ -1,5 +1,5 @@
 import { EventEmitter } from '../components/base/events';
-import { ModalManager } from '../modules/modal';
+import { Modal } from '../modules/modal';
 import {
 	BasketViewModel,
 	BasketViewModelConfig,
@@ -12,7 +12,7 @@ export class BasketView implements BasketViewModel {
 	modal: Element;
 	events: EventEmitter;
 	items: Map<Product['id'], number>;
-	modalManager: ModalManager;
+	modalManager: Modal;
 	catalog: Catalog<Product>;
 	cardTemplateEl: HTMLTemplateElement;
 	itemListEl: Element;

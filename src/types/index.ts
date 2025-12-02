@@ -1,6 +1,6 @@
 import { EventEmitter } from '../components/base/events';
 import { Catalog } from '../models/Catalog';
-import { ModalManager } from '../modules/modal';
+import { Modal } from '../modules/modal';
 
 export type ProductList = {
 	total: number;
@@ -55,7 +55,7 @@ export type BasketViewModel = {
 	totalPriceEl: Element;
 	cardTemplateEl: HTMLTemplateElement;
 	events: EventEmitter;
-	modalManager: ModalManager;
+	modalManager: Modal;
 	catalog: Catalog<Product>;
 	hideBasket: () => void;
 	showBasket: () => void;
@@ -67,13 +67,46 @@ export type BasketViewModelConstructor = Omit<
 >;
 
 export type BasketViewModelConfig = Omit<
-	BasketViewModel,
-	| 'hideBasket'
-	| 'showBasket'
-	| 'itemListEl'
-	| 'totalPriceEl'
+	BasketViewModelConstructor,
+	'itemListEl' | 'totalPriceEl' | 'modal' | 'cardTemplateEl'
+>;
+
+export type ModalConfig = {
+	activeModalClass: string;
+	closeButtonQuery: string;
+	modalContainerQuery: string;
+};
+
+export type PreviewModal = {
+	events: EventEmitter;
+	modal: Element;
+	catalog: Catalog<Product>;
+	clickListener: () => void | null;
+	titleEl: Element;
+	categoryEl: Element;
+	imageEl: HTMLImageElement;
+	priceEl: Element;
+	descriptionEl: Element;
+	addToBasketButton: Element;
+	hidePreview: () => void;
+	showPreview: () => void;
+} & ModalConfig;
+
+export type PreviewModalConstructor = Omit<
+	PreviewModal,
+	'hidePreview' | 'showPreview' | 'clickListener'
+>;
+
+export type PreviewModalConfig = Omit<
+	PreviewModalConstructor,
+	| keyof ModalConfig
 	| 'modal'
-	| 'cardTemplateEl'
+	| 'titleEl'
+	| 'categoryEl'
+	| 'imageEl'
+	| 'priceEl'
+	| 'descriptionEl'
+	| 'addToBasketButton'
 >;
 
 export type PaymentVariant = 'Онлайн' | 'При получениее';
