@@ -1,4 +1,6 @@
 import { EventEmitter } from '../components/base/events';
+import { Catalog } from '../models/Catalog';
+import { ModalManager } from '../modules/modal';
 
 export type ProductList = {
 	total: number;
@@ -45,6 +47,34 @@ export type CatalogModel<T> = {
 	getItems: () => T[];
 	events: EventEmitter;
 };
+
+export type BasketViewModel = {
+	modal: Element;
+	items: Map<Product['id'], number>;
+	itemListEl: Element;
+	totalPriceEl: Element;
+	cardTemplateEl: HTMLTemplateElement;
+	events: EventEmitter;
+	modalManager: ModalManager;
+	catalog: Catalog<Product>;
+	hideBasket: () => void;
+	showBasket: () => void;
+};
+
+export type BasketViewModelConstructor = Omit<
+	BasketViewModel,
+	'hideBasket' | 'showBasket'
+>;
+
+export type BasketViewModelConfig = Omit<
+	BasketViewModel,
+	| 'hideBasket'
+	| 'showBasket'
+	| 'itemListEl'
+	| 'totalPriceEl'
+	| 'modal'
+	| 'cardTemplateEl'
+>;
 
 export type PaymentVariant = 'Онлайн' | 'При получениее';
 
