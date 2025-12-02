@@ -168,15 +168,15 @@ appState.events.on('card:click', (event) => {
 appState.events.on('basket:add', (event) => {
 	if ('productData' in event) {
 		appState.basket.add((event.productData as Product).id);
-		basketView.updateBasket();
 	}
 });
 appState.events.on('basket:remove', (event) => {
 	if ('id' in event && typeof event.id == 'string') {
 		appState.basket.remove(event.id);
-		basketView.updateBasket();
 	}
 });
+appState.events.on('basket:change', () => basketView.updateBasket());
+
 modalManager.attachListenersToModals();
 fetchProducts()
 	.then((products) => {

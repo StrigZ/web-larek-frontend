@@ -11,24 +11,38 @@ export class Basket implements BasketModel {
 	}
 
 	add(id: string) {
-		this.items.set(id, this.items.has(id) ? this.items.get(id)! + 1 : 1);
+		const doesExist = this.items.has(id);
+		if (doesExist) {
+			const currIndex = this.items.get(id);
+			if (!currIndex) return;
+			this.items.set(id, currIndex + 1);
+		} else {
+			this.items.set(id, 1);
+		}
+
 		this._changed();
 	}
 
 	remove(id: string) {
-		if (!this.items.has(id)) {
+		const doesExist = this.items.has(id);
+		if (!doesExist) {
 			return;
 		}
 
-		if (this.items.get(id) === 1) {
+		const currIndex = this.items.get(id);
+		if (!currIndex) return;
+
+		if (currIndex === 1) {
 			return this.items.delete(id);
 		}
 
-		this.items.set(id, this.items.get(id)! - 1);
+		this.items.set(id, currIndex - 1);
 		this._changed();
 	}
 
 	private _changed() {
-		this.events.emit('basket:change', { items: Array.from(this.items.keys()) });
+		console.log(this.items);
+
+		this.events.emit('basket:change');
 	}
 }
