@@ -113,7 +113,9 @@ function populateGallery({
 	);
 }
 
-openBasketButton?.addEventListener('click', () => basketModal.showModal());
+openBasketButton?.addEventListener('click', () =>
+	appState.events.emit('basket:open')
+);
 
 appState.events.on('preview:open', (event) => {
 	if ('id' in event && typeof event.id == 'string') {

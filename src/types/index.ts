@@ -1,6 +1,5 @@
 import { EventEmitter } from '../components/base/events';
 import { Catalog } from '../models/Catalog';
-import { Modal } from '../modules/modal';
 
 export type ProductList = {
 	total: number;

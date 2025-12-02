@@ -66,6 +66,7 @@ export class BasketModal extends Modal implements BasketModal {
 				? 'Бесценно'
 				: totalPrice.toString();
 		} else {
+			this.totalPriceEl.textContent = '0 синапсов';
 			this.itemListEl.textContent = 'Корзина пуста!';
 		}
 	}
