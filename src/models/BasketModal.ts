@@ -1,47 +1,48 @@
 import { EventEmitter } from '../components/base/events';
 import { Modal } from '../modules/modal';
 import {
-	BasketViewModel,
-	BasketViewModelConfig,
-	BasketViewModelConstructor,
+	BasketModalConfig,
+	BasketModalConstructor,
 	Product,
+	ModalConfig,
 } from '../types';
 import { Catalog } from './Catalog';
 
-export class BasketView implements BasketViewModel {
-	modal: Element;
-	events: EventEmitter;
-	items: Map<Product['id'], number>;
-	modalManager: Modal;
-	catalog: Catalog<Product>;
-	cardTemplateEl: HTMLTemplateElement;
-	itemListEl: Element;
-	totalPriceEl: Element;
+export class BasketModal extends Modal implements BasketModal {
+	private modal: Element;
+	private events: EventEmitter;
+	private items: Map<Product['id'], number>;
+	private catalog: Catalog<Product>;
+	private cardTemplateEl: HTMLTemplateElement;
+	private itemListEl: Element;
+	private totalPriceEl: Element;
 	constructor({
 		modal,
 		events,
 		items,
-		modalManager,
 		itemListEl,
 		totalPriceEl,
 		cardTemplateEl,
 		catalog,
-	}: BasketViewModelConstructor) {
+		...modalConfig
+	}: BasketModalConstructor) {
+		super(modalConfig);
 		this.modal = modal;
 		this.items = items;
 		this.events = events;
 		this.catalog = catalog;
-		this.modalManager = modalManager;
 		this.itemListEl = itemListEl;
 		this.totalPriceEl = totalPriceEl;
 		this.cardTemplateEl = cardTemplateEl;
+
+		super.attachListeners(this.modal, () => this.events.emit('basket:close'));
 	}
 
-	showBasket() {
-		this.modalManager.showModal(this.modal);
+	showModal() {
+		super.showModal(this.modal);
 	}
-	hideBasket() {
-		this.modalManager.closeModal(this.modal);
+	closeModal() {
+		super.closeModal(this.modal);
 	}
 	updateBasket() {
 		this.itemListEl.innerHTML = '';
@@ -92,55 +93,53 @@ export class BasketView implements BasketViewModel {
 		return cardElement;
 	}
 
-	public static initBasketView({
-		queries: {
-			basketModalQuery,
-			cardTemplateQuery,
-			itemListQuery,
-			totalPriceQuery,
-		},
+	public static initBasketModal({
+		queries,
 		config,
+		modalConfig,
 	}: {
 		queries: {
-			basketModalQuery: string;
-			cardTemplateQuery: string;
-			itemListQuery: string;
-			totalPriceQuery: string;
+			modal: string;
+			itemList: string;
+			totalPrice: string;
+			cardTemplate: string;
 		};
-		config: BasketViewModelConfig;
+		config: BasketModalConfig;
+		modalConfig: ModalConfig;
 	}) {
-		const modal = document.querySelector(basketModalQuery);
+		const modal = document.querySelector(queries.modal);
 		if (!modal) {
-			throw new Error('initBasketView: Basket modal was not found!');
+			throw new Error('initBasketModal: Basket modal was not found!');
 		}
 		const cardTemplateEl = document.querySelector(
-			cardTemplateQuery
+			queries.cardTemplate
 		) as HTMLTemplateElement | null;
 		if (!cardTemplateEl) {
-			throw new Error('initBasketView: Basket card template  was not found!');
+			throw new Error('initBasketModal: Basket card template  was not found!');
 		}
-		const itemListEl = modal.querySelector(itemListQuery);
+		const itemListEl = modal.querySelector(queries.itemList);
 		if (!itemListEl) {
 			throw new Error(
-				'initBasketView: Basket item list element was not found!'
+				'initBasketModal: Basket item list element was not found!'
 			);
 		}
-		const totalPriceEl = modal.querySelector(totalPriceQuery);
+		const totalPriceEl = modal.querySelector(queries.totalPrice);
 		if (!totalPriceEl) {
 			throw new Error(
-				'initBasketView: Basket total price element was not found!'
+				'initBasketModal: Basket total price element was not found!'
 			);
 		}
 
 		itemListEl.innerHTML = 'Корзина пуста!';
 		totalPriceEl.textContent = '0 синапсов';
 
-		return new BasketView({
+		return new BasketModal({
 			modal,
 			itemListEl,
 			totalPriceEl,
 			cardTemplateEl,
 			...config,
+			...modalConfig,
 		});
 	}
 }

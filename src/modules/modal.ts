@@ -1,9 +1,9 @@
 import { ModalConfig } from '../types';
 
 export class Modal {
-	activeModalClass: string;
-	closeButtonQuery: string;
-	modalContainerQuery: string;
+	private activeModalClass: string;
+	private closeButtonQuery: string;
+	private modalContainerQuery: string;
 	constructor({
 		activeModalClass,
 		closeButtonQuery,
@@ -21,7 +21,7 @@ export class Modal {
 		modal.classList.remove(this.activeModalClass);
 	}
 
-	attachListeners(modal: Element, listener?: () => void) {
+	protected attachListeners(modal: Element, listener?: () => void) {
 		const closeButton = modal.querySelector(this.closeButtonQuery);
 		if (!closeButton) {
 			throw new Error('attachListenersToModals: close button was not found!');

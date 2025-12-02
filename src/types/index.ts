@@ -48,27 +48,26 @@ export type CatalogModel<T> = {
 	events: EventEmitter;
 };
 
-export type BasketViewModel = {
+export type BasketModal = {
 	modal: Element;
 	items: Map<Product['id'], number>;
 	itemListEl: Element;
 	totalPriceEl: Element;
 	cardTemplateEl: HTMLTemplateElement;
 	events: EventEmitter;
-	modalManager: Modal;
 	catalog: Catalog<Product>;
 	hideBasket: () => void;
 	showBasket: () => void;
-};
+} & ModalConfig;
 
-export type BasketViewModelConstructor = Omit<
-	BasketViewModel,
+export type BasketModalConstructor = Omit<
+	BasketModal,
 	'hideBasket' | 'showBasket'
 >;
 
-export type BasketViewModelConfig = Omit<
-	BasketViewModelConstructor,
-	'itemListEl' | 'totalPriceEl' | 'modal' | 'cardTemplateEl'
+export type BasketModalConfig = Omit<
+	BasketModalConstructor,
+	keyof ModalConfig | 'itemListEl' | 'totalPriceEl' | 'modal' | 'cardTemplateEl'
 >;
 
 export type ModalConfig = {

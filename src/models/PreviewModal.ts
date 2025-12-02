@@ -10,15 +10,15 @@ import { CDN_URL } from '../utils/constants';
 import { Catalog } from './Catalog';
 
 export class PreviewModal extends Modal implements PreviewModal {
-	modal: Element;
-	addToBasketButton: Element;
-	categoryEl: Element;
-	descriptionEl: Element;
-	imageEl: HTMLImageElement;
-	priceEl: Element;
-	titleEl: Element;
-	events: EventEmitter;
-	catalog: Catalog<Product>;
+	private modal: Element;
+	private addToBasketButton: Element;
+	private categoryEl: Element;
+	private descriptionEl: Element;
+	private imageEl: HTMLImageElement;
+	private priceEl: Element;
+	private titleEl: Element;
+	private events: EventEmitter;
+	private catalog: Catalog<Product>;
 	clickListener: (() => void) | null;
 	constructor({
 		modal,

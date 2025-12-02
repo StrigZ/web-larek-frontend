@@ -2,10 +2,9 @@ import { apiClient } from './components/base/api';
 import { EventEmitter } from './components/base/events';
 import { AppState } from './models/AppState';
 import { Basket } from './models/Basket';
-import { BasketView } from './models/BasketView';
+import { BasketModal } from './models/BasketModal';
 import { Catalog } from './models/Catalog';
 import { PreviewModal } from './models/PreviewModal';
-import { Modal } from './modules/modal';
 import './scss/styles.scss';
 import type { ModalConfig, Product, ProductList } from './types';
 import { CDN_URL } from './utils/constants';
@@ -21,22 +20,17 @@ const modalConfig: ModalConfig = {
 	activeModalClass: 'modal_active',
 };
 
-const modalManager = new Modal({
-	closeButtonQuery: '.modal__close',
-	modalContainerQuery: '.modal__container',
-	activeModalClass: 'modal_active',
-});
-
 const openBasketButton = document.querySelector('.header__basket');
 
-const basketView = BasketView.initBasketView({
+const basketModal = BasketModal.initBasketModal({
 	queries: {
-		basketModalQuery: '.modal:has(.basket)',
-		cardTemplateQuery: '#card-basket',
-		itemListQuery: '.basket__list',
-		totalPriceQuery: '.basket__price',
+		modal: '.modal:has(.basket)',
+		cardTemplate: '#card-basket',
+		itemList: '.basket__list',
+		totalPrice: '.basket__price',
 	},
-	config: { catalog, events: eventEmitter, items: basket.items, modalManager },
+	config: { catalog, events: eventEmitter, items: basket.items },
+	modalConfig,
 });
 const previewModal = PreviewModal.initPreviewModal({
 	queries: {
@@ -119,7 +113,7 @@ function populateGallery({
 	);
 }
 
-openBasketButton?.addEventListener('click', () => basketView.showBasket());
+openBasketButton?.addEventListener('click', () => basketModal.showModal());
 
 appState.events.on('preview:open', (event) => {
 	if ('id' in event && typeof event.id == 'string') {
@@ -137,7 +131,9 @@ appState.events.on('basket:remove', (event) => {
 		appState.basket.remove(event.id);
 	}
 });
-appState.events.on('basket:change', () => basketView.updateBasket());
+appState.events.on('basket:change', () => basketModal.updateBasket());
+appState.events.on('basket:open', () => basketModal.showModal());
+appState.events.on('basket:close', () => basketModal.closeModal());
 
 fetchProducts()
 	.then((products) => {

@@ -33,7 +33,9 @@ export class Basket implements BasketModel {
 		if (!currIndex) return;
 
 		if (currIndex === 1) {
-			return this.items.delete(id);
+			this.items.delete(id);
+			this._changed();
+			return;
 		}
 
 		this.items.set(id, currIndex - 1);
