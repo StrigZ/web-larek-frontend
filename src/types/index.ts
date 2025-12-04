@@ -105,3 +105,7 @@ export type AppStateModel = {
 	events: EventEmitter;
 	setOrderDetails: (details: Partial<OrderDetails>) => void;
 };
+
+export type GalleryView = {
+	populateGallery: (items: Product[]) => void;
+};

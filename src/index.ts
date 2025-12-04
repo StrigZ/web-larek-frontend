@@ -1,13 +1,16 @@
+import './scss/styles.scss';
+
 import { apiClient } from './components/base/api';
 import { EventEmitter } from './components/base/events';
+
 import { AppState } from './models/AppState';
 import { Basket } from './models/Basket';
 import { BasketModal } from './models/BasketModal';
 import { Catalog } from './models/Catalog';
+import { GalleryView } from './models/CatalogView';
 import { PreviewModal } from './models/PreviewModal';
-import './scss/styles.scss';
-import type { ModalConfig, Product, ProductList } from './types';
-import { CDN_URL } from './utils/constants';
+
+import type { ModalConfig, ProductList } from './types';
 
 const events = new EventEmitter();
 const catalog = new Catalog(events);
@@ -44,72 +47,14 @@ const previewModal = PreviewModal.initPreviewModal({
 	},
 	modalConfig,
 });
+
+const galleryView = GalleryView.initGalleryView({
+	queries: { cardTemplate: '#card-catalog', gallery: '.gallery' },
+	config: { events },
+});
+
 async function fetchProducts() {
 	return await apiClient.get<ProductList>('/product/');
-}
-
-function createProductCard({
-	cardTemplate,
-	category,
-	image,
-	price,
-	title,
-	id,
-}: {
-	cardTemplate: HTMLTemplateElement;
-} & Product) {
-	const card = cardTemplate.content.cloneNode(true) as DocumentFragment;
-	const titleEl = card.querySelector('.card__title');
-	const categoryEl = card.querySelector('.card__category');
-	const imageEl = card.querySelector('.card__image') as HTMLImageElement | null;
-	const priceEl = card.querySelector('.card__price');
-
-	if (!categoryEl || !imageEl || !priceEl || !titleEl) {
-		throw new Error('Required card elements not found');
-	}
-	const cardElement = card.querySelector('.card') as HTMLElement;
-
-	titleEl.textContent = title;
-	categoryEl.textContent = category;
-	imageEl.src = `${CDN_URL}${image}`;
-	priceEl.textContent = price ? `${price.toString()} синапсов` : 'Бесценно';
-
-	cardElement.addEventListener('click', () =>
-		appState.events.emit('preview:open', { id })
-	);
-	return cardElement;
-}
-
-function populateGallery({
-	products,
-	galleryQuery,
-	cardTemplateQuery,
-}: {
-	galleryQuery: string;
-	cardTemplateQuery: string;
-	products: Product[];
-}) {
-	const gallery = document.querySelector(`${galleryQuery}`);
-	if (!gallery) {
-		throw new Error('populateGallery: Gallery element was not found!');
-	}
-
-	const cardTemplate = document.querySelector(
-		`${cardTemplateQuery}`
-	) as HTMLTemplateElement | null;
-
-	if (!cardTemplate) {
-		throw new Error('populateGallery: Card template element was not found!');
-	}
-
-	products.forEach((data) =>
-		gallery.append(
-			createProductCard({
-				cardTemplate,
-				...data,
-			})
-		)
-	);
 }
 
 appState.events.on('preview:open', (event) => {
@@ -134,11 +79,8 @@ appState.events.on('basket:close', () => basketModal.closeModal());
 
 fetchProducts()
 	.then((products) => {
-		appState.catalog.setItems(products.items);
-		populateGallery({
-			galleryQuery: '.gallery',
-			cardTemplateQuery: '#card-catalog',
-			products: appState.catalog.getItems(),
-		});
+		const { items } = products;
+		appState.catalog.setItems(items);
+		galleryView.populateGallery(items);
 	})
 	.catch((e) => console.error(e));
