@@ -10,7 +10,13 @@ import { Catalog } from './models/Catalog';
 import { GalleryView } from './models/CatalogView';
 import { PreviewModal } from './models/PreviewModal';
 
-import type { ModalConfig, ProductList } from './types';
+import type {
+	BasketAddEvent,
+	BasketRemoveEvent,
+	ModalConfig,
+	PreviewOpenEvent,
+	ProductList,
+} from './types';
 
 const events = new EventEmitter();
 const catalog = new Catalog(events);
@@ -53,29 +59,23 @@ const galleryView = GalleryView.initGalleryView({
 	config: { events },
 });
 
-async function fetchProducts() {
-	return await apiClient.get<ProductList>('/product/');
-}
-
-appState.events.on('preview:open', (event) => {
-	if ('id' in event && typeof event.id == 'string') {
-		previewModal.showPreview(event.id);
-	}
-});
+appState.events.on<PreviewOpenEvent>('preview:open', (event) =>
+	previewModal.showPreview(event.id)
+);
 appState.events.on('preview:close', () => previewModal.hidePreview());
-appState.events.on('basket:add', (event) => {
-	if ('id' in event && typeof event.id == 'string') {
-		appState.basket.add(event.id);
-	}
-});
-appState.events.on('basket:remove', (event) => {
-	if ('id' in event && typeof event.id == 'string') {
-		appState.basket.remove(event.id);
-	}
-});
+appState.events.on<BasketAddEvent>('basket:add', (event) =>
+	appState.basket.add(event.id)
+);
+appState.events.on<BasketRemoveEvent>('basket:remove', (event) =>
+	appState.basket.remove(event.id)
+);
 appState.events.on('basket:change', () => basketModal.updateBasket());
 appState.events.on('basket:open', () => basketModal.showModal());
 appState.events.on('basket:close', () => basketModal.closeModal());
+
+async function fetchProducts() {
+	return await apiClient.get<ProductList>('/product/');
+}
 
 fetchProducts()
 	.then((products) => {

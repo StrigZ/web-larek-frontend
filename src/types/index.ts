@@ -109,3 +109,7 @@ export type AppStateModel = {
 export type GalleryView = {
 	populateGallery: (items: Product[]) => void;
 };
+
+export type PreviewOpenEvent = { id: string };
+export type BasketAddEvent = { id: string };
+export type BasketRemoveEvent = { id: string };
