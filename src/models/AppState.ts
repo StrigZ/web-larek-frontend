@@ -7,15 +7,15 @@ import {
 } from '../types';
 import { DEFAULT_ORDER_DETAILS } from '../utils/constants';
 
-export class AppState<T> implements AppStateModel<T> {
+export class AppState implements AppStateModel {
 	basket: BasketModel;
-	catalog: CatalogModel<T>;
+	catalog: CatalogModel;
 	orderDetails: OrderDetails;
 	events: EventEmitter;
 
 	constructor(
 		basket: BasketModel,
-		catalog: CatalogModel<T>,
+		catalog: CatalogModel,
 		events: EventEmitter
 	) {
 		this.basket = basket;

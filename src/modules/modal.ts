@@ -1,17 +1,25 @@
-import { ModalConfig } from '../types';
+import { EventEmitter } from '../components/base/events';
+import { Catalog } from '../models/Catalog';
+import { ModalConfig, Modal as TModal } from '../types';
 
-export class Modal {
+export class Modal implements TModal {
 	private activeModalClass: string;
 	private closeButtonQuery: string;
 	private modalContainerQuery: string;
+	protected events: EventEmitter;
+	protected catalog: Catalog;
 	constructor({
 		activeModalClass,
 		closeButtonQuery,
 		modalContainerQuery,
+		catalog,
+		events,
 	}: ModalConfig) {
 		this.activeModalClass = activeModalClass;
 		this.closeButtonQuery = closeButtonQuery;
 		this.modalContainerQuery = modalContainerQuery;
+		this.catalog = catalog;
+		this.events = events;
 	}
 
 	showModal(modal: Element) {

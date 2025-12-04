@@ -1,8 +1,8 @@
 import { EventEmitter } from '../components/base/events';
-import { CatalogModel } from '../types';
+import { CatalogModel, Product } from '../types';
 
-export class Catalog<T extends { id: string }> implements CatalogModel<T> {
-	items: T[] = [];
+export class Catalog implements CatalogModel {
+	items: Product[] = [];
 	events: EventEmitter;
 
 	constructor(events: EventEmitter) {
@@ -10,7 +10,7 @@ export class Catalog<T extends { id: string }> implements CatalogModel<T> {
 		this.events = events;
 	}
 
-	setItems(items: T[]) {
+	setItems(items: Product[]) {
 		this.items = items;
 		this._loaded();
 	}

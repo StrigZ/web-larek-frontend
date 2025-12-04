@@ -1,15 +1,13 @@
-import { EventEmitter } from '../components/base/events';
 import { Modal } from '../modules/modal';
 import {
 	ModalConfig,
-	PreviewModalConfig,
 	PreviewModalConstructor,
+	PreviewModal as TPreviewModal,
 	Product,
 } from '../types';
 import { CDN_URL } from '../utils/constants';
-import { Catalog } from './Catalog';
 
-export class PreviewModal extends Modal implements PreviewModal {
+export class PreviewModal extends Modal implements TPreviewModal {
 	private modal: Element;
 	private addToBasketButton: Element;
 	private categoryEl: Element;
@@ -17,9 +15,8 @@ export class PreviewModal extends Modal implements PreviewModal {
 	private imageEl: HTMLImageElement;
 	private priceEl: Element;
 	private titleEl: Element;
-	private events: EventEmitter;
-	private catalog: Catalog<Product>;
-	clickListener: (() => void) | null;
+	private clickListener: (() => void) | null;
+
 	constructor({
 		modal,
 		addToBasketButton,
@@ -28,8 +25,6 @@ export class PreviewModal extends Modal implements PreviewModal {
 		imageEl,
 		priceEl,
 		titleEl,
-		events,
-		catalog,
 		...modalConfig
 	}: PreviewModalConstructor) {
 		super(modalConfig);
@@ -40,8 +35,6 @@ export class PreviewModal extends Modal implements PreviewModal {
 		this.imageEl = imageEl;
 		this.priceEl = priceEl;
 		this.titleEl = titleEl;
-		this.events = events;
-		this.catalog = catalog;
 		this.clickListener = null;
 
 		super.attachListeners(this.modal, () => this.events.emit('preview:close'));
@@ -87,7 +80,6 @@ export class PreviewModal extends Modal implements PreviewModal {
 	}
 	public static initPreviewModal({
 		queries,
-		config,
 		modalConfig,
 	}: {
 		queries: {
@@ -99,7 +91,6 @@ export class PreviewModal extends Modal implements PreviewModal {
 			description: string;
 			addButton: string;
 		};
-		config: PreviewModalConfig;
 		modalConfig: ModalConfig;
 	}) {
 		const modal = document.querySelector(queries.modal);
@@ -141,7 +132,6 @@ export class PreviewModal extends Modal implements PreviewModal {
 			priceEl,
 			descriptionEl,
 			addToBasketButton,
-			...config,
 			...modalConfig,
 		});
 	}

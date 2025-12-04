@@ -9,18 +9,18 @@ import './scss/styles.scss';
 import type { ModalConfig, Product, ProductList } from './types';
 import { CDN_URL } from './utils/constants';
 
-const eventEmitter = new EventEmitter();
-const catalog = new Catalog<Product>(eventEmitter);
-const basket = new Basket(eventEmitter);
-const appState = new AppState(basket, catalog, eventEmitter);
+const events = new EventEmitter();
+const catalog = new Catalog(events);
+const basket = new Basket(events);
+const appState = new AppState(basket, catalog, events);
 
 const modalConfig: ModalConfig = {
 	closeButtonQuery: '.modal__close',
 	modalContainerQuery: '.modal__container',
 	activeModalClass: 'modal_active',
+	catalog,
+	events,
 };
-
-const openBasketButton = document.querySelector('.header__basket');
 
 const basketModal = BasketModal.initBasketModal({
 	queries: {
@@ -28,8 +28,8 @@ const basketModal = BasketModal.initBasketModal({
 		cardTemplate: '#card-basket',
 		itemList: '.basket__list',
 		totalPrice: '.basket__price',
+		openBasketButton: '.header__basket',
 	},
-	config: { catalog, events: eventEmitter, items: basket.items },
 	modalConfig,
 });
 const previewModal = PreviewModal.initPreviewModal({
@@ -42,7 +42,6 @@ const previewModal = PreviewModal.initPreviewModal({
 		price: '.card__price',
 		title: '.card__title',
 	},
-	config: { catalog, events: eventEmitter },
 	modalConfig,
 });
 async function fetchProducts() {
@@ -112,10 +111,6 @@ function populateGallery({
 		)
 	);
 }
-
-openBasketButton?.addEventListener('click', () =>
-	appState.events.emit('basket:open')
-);
 
 appState.events.on('preview:open', (event) => {
 	if ('id' in event && typeof event.id == 'string') {

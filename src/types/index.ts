@@ -32,80 +32,62 @@ export type ProductCategory =
 	| 'хард-скил'
 	| 'другое';
 
+export type Basket = Map<Product['id'], number>;
+
 export type BasketModel = {
-	items: Map<string, number>;
+	items: Basket;
 	add: (id: string) => void;
 	remove: (id: string) => void;
 	events: EventEmitter;
 };
 
-export type CatalogModel<T> = {
-	items: T[];
-	setItems: (items: T[]) => void;
-	getItemById: (id: string) => T;
-	getItems: () => T[];
+export type CatalogModel = {
+	items: Product[];
+	setItems: (items: Product[]) => void;
+	getItemById: (id: string) => Product;
+	getItems: () => Product[];
 	events: EventEmitter;
 };
 
 export type BasketModal = {
+	updateBasket: () => void;
+};
+
+export type BasketModalConstructor = {
 	modal: Element;
-	items: Map<Product['id'], number>;
 	itemListEl: Element;
 	totalPriceEl: Element;
 	cardTemplateEl: HTMLTemplateElement;
-	events: EventEmitter;
-	catalog: Catalog<Product>;
-	hideBasket: () => void;
-	showBasket: () => void;
+	openBasketButton: Element;
 } & ModalConfig;
-
-export type BasketModalConstructor = Omit<
-	BasketModal,
-	'hideBasket' | 'showBasket'
->;
-
-export type BasketModalConfig = Omit<
-	BasketModalConstructor,
-	keyof ModalConfig | 'itemListEl' | 'totalPriceEl' | 'modal' | 'cardTemplateEl'
->;
 
 export type ModalConfig = {
 	activeModalClass: string;
 	closeButtonQuery: string;
 	modalContainerQuery: string;
+	events: EventEmitter;
+	catalog: Catalog;
+};
+
+export type Modal = {
+	showModal: (modal: Element) => void;
+	closeModal: (modal: Element) => void;
 };
 
 export type PreviewModal = {
-	events: EventEmitter;
+	hidePreview: () => void;
+	showPreview: (id: string) => void;
+};
+
+export type PreviewModalConstructor = {
 	modal: Element;
-	catalog: Catalog<Product>;
-	clickListener: () => void | null;
 	titleEl: Element;
 	categoryEl: Element;
 	imageEl: HTMLImageElement;
 	priceEl: Element;
 	descriptionEl: Element;
 	addToBasketButton: Element;
-	hidePreview: () => void;
-	showPreview: () => void;
 } & ModalConfig;
-
-export type PreviewModalConstructor = Omit<
-	PreviewModal,
-	'hidePreview' | 'showPreview' | 'clickListener'
->;
-
-export type PreviewModalConfig = Omit<
-	PreviewModalConstructor,
-	| keyof ModalConfig
-	| 'modal'
-	| 'titleEl'
-	| 'categoryEl'
-	| 'imageEl'
-	| 'priceEl'
-	| 'descriptionEl'
-	| 'addToBasketButton'
->;
 
 export type PaymentVariant = 'Онлайн' | 'При получениее';
 
@@ -116,9 +98,9 @@ export type OrderDetails = {
 	phoneNumber: string;
 };
 
-export type AppStateModel<T> = {
+export type AppStateModel = {
 	basket: BasketModel;
-	catalog: CatalogModel<T>;
+	catalog: CatalogModel;
 	orderDetails: OrderDetails;
 	events: EventEmitter;
 	setOrderDetails: (details: Partial<OrderDetails>) => void;

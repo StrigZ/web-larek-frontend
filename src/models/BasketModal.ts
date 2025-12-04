@@ -1,41 +1,36 @@
-import { EventEmitter } from '../components/base/events';
 import { Modal } from '../modules/modal';
 import {
-	BasketModalConfig,
 	BasketModalConstructor,
 	Product,
 	ModalConfig,
+	BasketModal as TBasketModal,
+	Basket,
 } from '../types';
-import { Catalog } from './Catalog';
 
-export class BasketModal extends Modal implements BasketModal {
+export class BasketModal extends Modal implements TBasketModal {
 	private modal: Element;
-	private events: EventEmitter;
-	private items: Map<Product['id'], number>;
-	private catalog: Catalog<Product>;
+	private items: Basket;
 	private cardTemplateEl: HTMLTemplateElement;
 	private itemListEl: Element;
 	private totalPriceEl: Element;
+	private openBasketButton: Element;
 	constructor({
 		modal,
-		events,
-		items,
 		itemListEl,
 		totalPriceEl,
 		cardTemplateEl,
-		catalog,
+		openBasketButton,
 		...modalConfig
 	}: BasketModalConstructor) {
 		super(modalConfig);
 		this.modal = modal;
-		this.items = items;
-		this.events = events;
-		this.catalog = catalog;
+		this.items = new Map() satisfies Basket;
 		this.itemListEl = itemListEl;
 		this.totalPriceEl = totalPriceEl;
 		this.cardTemplateEl = cardTemplateEl;
+		this.openBasketButton = openBasketButton;
 
-		super.attachListeners(this.modal, () => this.events.emit('basket:close'));
+		this._attachClickListeners();
 	}
 
 	showModal() {
@@ -44,6 +39,7 @@ export class BasketModal extends Modal implements BasketModal {
 	closeModal() {
 		super.closeModal(this.modal);
 	}
+
 	updateBasket() {
 		this.itemListEl.innerHTML = '';
 		const basketItemsArray = Array.from(this.items);
@@ -93,10 +89,15 @@ export class BasketModal extends Modal implements BasketModal {
 		);
 		return cardElement;
 	}
+	private _attachClickListeners() {
+		super.attachListeners(this.modal, () => this.events.emit('basket:close'));
+		this.openBasketButton.addEventListener('click', () =>
+			this.events.emit('basket:open')
+		);
+	}
 
 	public static initBasketModal({
 		queries,
-		config,
 		modalConfig,
 	}: {
 		queries: {
@@ -104,8 +105,8 @@ export class BasketModal extends Modal implements BasketModal {
 			itemList: string;
 			totalPrice: string;
 			cardTemplate: string;
+			openBasketButton: string;
 		};
-		config: BasketModalConfig;
 		modalConfig: ModalConfig;
 	}) {
 		const modal = document.querySelector(queries.modal);
@@ -130,7 +131,14 @@ export class BasketModal extends Modal implements BasketModal {
 				'initBasketModal: Basket total price element was not found!'
 			);
 		}
-
+		const openBasketButton = document.querySelector(
+			queries.openBasketButton
+		) as HTMLButtonElement | null;
+		if (!openBasketButton) {
+			throw new Error(
+				'initBasketModal: open basket button element was not found!'
+			);
+		}
 		itemListEl.innerHTML = 'Корзина пуста!';
 		totalPriceEl.textContent = '0 синапсов';
 
@@ -139,7 +147,7 @@ export class BasketModal extends Modal implements BasketModal {
 			itemListEl,
 			totalPriceEl,
 			cardTemplateEl,
-			...config,
+			openBasketButton,
 			...modalConfig,
 		});
 	}
