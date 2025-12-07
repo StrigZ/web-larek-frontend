@@ -11,6 +11,7 @@ import { Catalog } from './models/Catalog';
 import type {
 	BasketAddEvent,
 	BasketRemoveEvent,
+	ContactsFormDetails,
 	OrderDetails,
 	PreviewOpenEvent,
 	ProductList,
@@ -19,6 +20,7 @@ import { OrderForm } from './components/view/OrderForm';
 import { BaseModalView } from './components/base/BaseModalView';
 import { GalleryView } from './components/view/GalleryView';
 import { CardDetails } from './components/view/CardDetails';
+import { ContactsForm } from './components/view/ContactForm';
 
 const events = new EventEmitter();
 const catalog = new Catalog(events);
@@ -41,6 +43,10 @@ const orderForm = new OrderForm({
 	onSubmit: onOrderFormSubmit,
 	onPaymentDetailsChange: onPaymentDetailsChange,
 });
+const contactsFrom = new ContactsForm({
+	onSubmit: onContactsFormSubmit,
+	onPaymentDetailsChange: onContactsChange,
+});
 
 appState.events.on('preview:open', onPreviewOpen);
 
@@ -51,9 +57,14 @@ appState.events.on('basket:open', onBasketOpen);
 
 appState.events.on('order:open', onOrderOpen);
 appState.events.on('order:submit', () => {
-	// render contact form
-	// set its content to modal view
-	// show modal view ?
+	contactsFrom.reset();
+	baseModalView.setContent(contactsFrom.getElement());
+	baseModalView.open();
+});
+
+appState.events.on('contacts:submit', () => {
+	// make api request
+	// show final modal
 });
 
 function onOrderFormSubmit(details: Partial<OrderDetails>) {
@@ -96,14 +107,31 @@ function onPreviewOpen({ id }: PreviewOpenEvent) {
 	baseModalView.setContent(preview.getElement());
 	baseModalView.open();
 }
+function onContactsChange(details: Partial<ContactsFormDetails>) {
+	contactsFrom.setSubmitButtonStatus(false);
+	if (!details.email) {
+		contactsFrom.setError('Email не может быть пустым!');
+		return;
+	}
+	if (!details.phoneNumber) {
+		contactsFrom.setError('Номер телефона не может быть пустым!');
+		return;
+	}
+	contactsFrom.setError('');
+	contactsFrom.setSubmitButtonStatus(true);
+}
 function onPaymentDetailsChange(details: Partial<OrderDetails>) {
+	orderForm.setSubmitButtonStatus(false);
 	if (!details.address) {
 		orderForm.setError('Адрес не может быть пустым!');
-		orderForm.setSubmitButtonStatus(false);
 		return;
 	}
 	orderForm.setError('');
 	orderForm.setSubmitButtonStatus(true);
+}
+function onContactsFormSubmit(details: Partial<ContactsFormDetails>) {
+	appState.setOrderDetails(details);
+	appState.events.emit('contacts:submit');
 }
 async function fetchProducts() {
 	return await apiClient.get<ProductList>('/product/');

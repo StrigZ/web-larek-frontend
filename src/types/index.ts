@@ -94,6 +94,7 @@ export type OrderModalConstructor = {
 };
 
 export type OrderFormDetails = Pick<OrderDetails, 'paymentVariant' | 'address'>;
+export type ContactsFormDetails = Pick<OrderDetails, 'email' | 'phoneNumber'>;
 
 export type OrderSubmitEvent = { details: OrderFormDetails };
 
@@ -104,6 +105,12 @@ export type BaseModalView = {
 };
 
 export type OrderForm = {
+	render: () => void;
+	getElement: () => void;
+	reset: () => void;
+};
+
+export type ContactsForm = {
 	render: () => void;
 	getElement: () => void;
 	reset: () => void;

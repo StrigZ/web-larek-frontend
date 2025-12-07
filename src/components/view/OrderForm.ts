@@ -12,7 +12,6 @@ export class OrderForm implements TOrderForm {
 	private errorSpan: Element;
 	private submitButton: HTMLButtonElement;
 	private details: Partial<OrderDetails>;
-	private isInputDirty: boolean;
 	constructor({
 		onSubmit,
 		onPaymentDetailsChange,
@@ -79,7 +78,6 @@ export class OrderForm implements TOrderForm {
 		addressInput.addEventListener('change', (e) => {
 			const target = e.target as HTMLInputElement | null;
 			if (!target) return;
-			this.isInputDirty = true;
 
 			this.details = { ...this.details, address: target.value };
 			onPaymentDetailsChange(this.details);
@@ -95,7 +93,6 @@ export class OrderForm implements TOrderForm {
 		this.errorSpan = errorSpan;
 		this.addressInput = addressInput;
 		this.submitButton = submitButton;
-		this.isInputDirty = false;
 		this.details = {};
 	}
 
@@ -112,17 +109,15 @@ export class OrderForm implements TOrderForm {
 		return this.formEl;
 	}
 	public setError(message: string) {
-		if (this.isInputDirty) {
-			this.errorSpan.textContent = message;
-		}
+		this.errorSpan.textContent = message;
 	}
 	public setSubmitButtonStatus(isActive: boolean) {
 		this.submitButton.disabled = !isActive;
 	}
 	public reset() {
-		this.isInputDirty = false;
 		this.addressInput.value = '';
 		this.submitButton.disabled = true;
+		this.details = {};
 		this._activatePaymentMethodButton('card');
 	}
 
