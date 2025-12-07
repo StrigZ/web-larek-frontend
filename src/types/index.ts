@@ -85,7 +85,7 @@ export type PreviewModalConstructor = {
 	addToBasketButton: Element;
 } & ModalConfig;
 
-export type PaymentVariant = 'Онлайн' | 'При получениее';
+export type PaymentVariant = 'Онлайн' | 'При получении';
 
 export type OrderDetails = {
 	paymentVariant: PaymentVariant;
@@ -111,16 +111,27 @@ export type BasketAddEvent = { id: string };
 export type BasketRemoveEvent = { id: string };
 
 export type OrderFormModal = {
-	showOrder: () => void;
-	hideOrder: () => void;
-	populateOrderForm: (details: OrderForm) => void;
+	showOrderForm: () => void;
+	hideOrderForm: () => void;
+	populateOrderForm: (details: OrderFormDetails) => void;
 };
 
 export type OrderModalConstructor = {
-	modal: Element;
-	formTemplate: HTMLTemplateElement;
-} & ModalConfig;
+	formTemplateQuery: string;
+};
 
-export type OrderForm = Pick<OrderDetails, 'paymentVariant' | 'address'>;
+export type OrderFormDetails = Pick<OrderDetails, 'paymentVariant' | 'address'>;
 
-export type OrderSubmitEvent = { details: OrderForm };
+export type OrderSubmitEvent = { details: OrderFormDetails };
+
+export type BaseModalView = {
+	setContent: (content: Element) => void;
+	open: () => void;
+	close: () => void;
+};
+
+export type OrderForm = {
+	render: () => void;
+	getElement: () => void;
+	reset: () => void;
+};

@@ -14,11 +14,11 @@ import type {
 	BasketAddEvent,
 	BasketRemoveEvent,
 	ModalConfig,
-	OrderSubmitEvent,
 	PreviewOpenEvent,
 	ProductList,
 } from './types';
-import { OrderFormModal } from './models/OrderFormModal';
+import { OrderForm } from './models/OrderForm';
+import { BaseModalView } from './components/base/BaseModalView';
 
 const events = new EventEmitter();
 const catalog = new Catalog(events);
@@ -56,12 +56,28 @@ const previewModal = PreviewModal.initPreviewModal({
 	modalConfig,
 });
 
-const orderFormModal = OrderFormModal.initOrderFormModal({
-	queries: {
-		modal: '.modal:has(.order)',
-		formTemplate: '#order',
+const baseModalView = new BaseModalView();
+const orderForm = new OrderForm({
+	onSubmit: (e) => {
+		e.preventDefault();
+		const form = e.currentTarget as HTMLFormElement | null;
+		if (!form) return;
+
+		const formData = new FormData(form);
+		const formObject = Object.fromEntries(formData) as Partial<OrderForm>;
+
+		const elements = form.elements;
+		const isCashPayment = (
+			elements.namedItem('cash') as HTMLElement
+		).classList.contains('button_alt-active');
+
+		appState.setOrderDetails({
+			...formObject,
+			paymentVariant: isCashPayment ? 'При получении' : 'Онлайн',
+		});
+
+		appState.events.emit('order:submit');
 	},
-	modalConfig,
 });
 
 const galleryView = GalleryView.initGalleryView({
@@ -85,13 +101,14 @@ appState.events.on('basket:open', () => basketModal.showModal());
 appState.events.on('basket:close', () => basketModal.closeModal());
 
 appState.events.on('order:open', () => {
-	orderFormModal.populateOrderForm(appState.orderDetails);
-	orderFormModal.showOrder();
+	orderForm.render(appState.orderDetails);
+	baseModalView.setContent(orderForm.getElement());
+	baseModalView.open();
 });
-appState.events.on('order:close', () => orderFormModal.hideOrder());
-appState.events.on<OrderSubmitEvent>('order:submit', ({ details }) => {
-	appState.orderDetails = { ...appState.orderDetails, ...details };
-	orderFormModal.hideOrder();
+appState.events.on('order:submit', () => {
+	// render contact form
+	// set its content to modal view
+	// show modal view ?
 });
 
 async function fetchProducts() {
