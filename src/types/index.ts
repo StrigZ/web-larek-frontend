@@ -49,18 +49,19 @@ export type CatalogModel = {
 	events: EventEmitter;
 };
 
-export type BasketModal = {
-	updateBasket: () => void;
+export type BasketView = {
+	render: (products: (Product & { index: number })[]) => void;
+	getElement: () => void;
 };
 
-export type BasketModalConstructor = {
+export type BasketViewConstructor = {
 	modal: Element;
 	itemListEl: Element;
 	totalPriceEl: Element;
 	cardTemplateEl: HTMLTemplateElement;
 	openBasketButton: Element;
 	goToOrderButton: HTMLButtonElement;
-} & ModalConfig;
+};
 
 export type ModalConfig = {
 	activeModalClass: string;
