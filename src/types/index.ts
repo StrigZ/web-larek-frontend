@@ -70,9 +70,9 @@ export type ModalConfig = {
 	catalog: Catalog;
 };
 
-export type PreviewModal = {
-	hidePreview: () => void;
-	showPreview: (id: string) => void;
+export type Preview = {
+	render: (product: Product) => void;
+	getElement: () => void;
 };
 
 export type PreviewModalConstructor = {

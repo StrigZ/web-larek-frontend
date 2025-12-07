@@ -7,8 +7,6 @@ import { AppState } from './models/AppState';
 import { Basket } from './models/Basket';
 import { BasketModal } from './models/BasketModal';
 import { Catalog } from './models/Catalog';
-import { GalleryView } from './models/CatalogView';
-import { PreviewModal } from './models/PreviewModal';
 
 import type {
 	BasketAddEvent,
@@ -19,11 +17,15 @@ import type {
 } from './types';
 import { OrderForm } from './models/OrderForm';
 import { BaseModalView } from './components/base/BaseModalView';
+import { Preview } from './models/Preview';
+import { GalleryView } from './models/GalleryView';
 
 const events = new EventEmitter();
 const catalog = new Catalog(events);
 const basket = new Basket(events);
 const appState = new AppState(basket, catalog, events);
+
+const baseModalView = new BaseModalView();
 
 const modalConfig: ModalConfig = {
 	closeButtonQuery: '.modal__close',
@@ -43,52 +45,24 @@ const basketModal = BasketModal.initBasketModal({
 	},
 	modalConfig,
 });
-const previewModal = PreviewModal.initPreviewModal({
-	queries: {
-		addButton: '.card__row button',
-		category: '.card__category',
-		description: '.card__text',
-		image: '.card__image',
-		modal: '.modal:has(.card)',
-		price: '.card__price',
-		title: '.card__title',
-	},
-	modalConfig,
+
+const galleryView = new GalleryView({
+	onCardClick: onGalleryCardClick,
 });
 
-const baseModalView = new BaseModalView();
 const orderForm = new OrderForm({
-	onSubmit: (e) => {
-		e.preventDefault();
-		const form = e.currentTarget as HTMLFormElement | null;
-		if (!form) return;
-
-		const formData = new FormData(form);
-		const formObject = Object.fromEntries(formData) as Partial<OrderForm>;
-
-		const elements = form.elements;
-		const isCashPayment = (
-			elements.namedItem('cash') as HTMLElement
-		).classList.contains('button_alt-active');
-
-		appState.setOrderDetails({
-			...formObject,
-			paymentVariant: isCashPayment ? 'При получении' : 'Онлайн',
-		});
-
-		appState.events.emit('order:submit');
-	},
+	onSubmit: onOrderFormSubmit,
 });
 
-const galleryView = GalleryView.initGalleryView({
-	queries: { cardTemplate: '#card-catalog', gallery: '.gallery' },
-	config: { events },
+appState.events.on<PreviewOpenEvent>('preview:open', ({ id }) => {
+	const productData = appState.catalog.getItemById(id);
+	const preview = new Preview({
+		onBasketAdd: () => appState.basket.add(id),
+	});
+	preview.render(productData);
+	baseModalView.setContent(preview.getElement());
+	baseModalView.open();
 });
-
-appState.events.on<PreviewOpenEvent>('preview:open', (event) =>
-	previewModal.showPreview(event.id)
-);
-appState.events.on('preview:close', () => previewModal.hidePreview());
 
 appState.events.on<BasketAddEvent>('basket:add', (event) =>
 	appState.basket.add(event.id)
@@ -111,6 +85,29 @@ appState.events.on('order:submit', () => {
 	// show modal view ?
 });
 
+function onOrderFormSubmit(e: Event) {
+	e.preventDefault();
+	const form = e.currentTarget as HTMLFormElement | null;
+	if (!form) return;
+
+	const formData = new FormData(form);
+	const formObject = Object.fromEntries(formData) as Partial<OrderForm>;
+
+	const elements = form.elements;
+	const isCashPayment = (
+		elements.namedItem('cash') as HTMLElement
+	).classList.contains('button_alt-active');
+
+	appState.setOrderDetails({
+		...formObject,
+		paymentVariant: isCashPayment ? 'При получении' : 'Онлайн',
+	});
+
+	appState.events.emit('order:submit');
+}
+function onGalleryCardClick(id: string) {
+	appState.events.emit('preview:open', { id });
+}
 async function fetchProducts() {
 	return await apiClient.get<ProductList>('/product/');
 }

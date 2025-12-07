@@ -1,23 +1,24 @@
-import { EventEmitter } from '../components/base/events';
 import { Product, GalleryView as TGalleryView } from '../types';
 import { CDN_URL } from '../utils/constants';
 
 export class GalleryView implements TGalleryView {
 	private galleryEl: Element;
 	private cardTemplateEl: HTMLTemplateElement;
-	private events: EventEmitter;
-	constructor({
-		events,
-		cardTemplateEl,
-		galleryEl,
-	}: {
-		galleryEl: Element;
-		cardTemplateEl: HTMLTemplateElement;
-		events: EventEmitter;
-	}) {
-		this.events = events;
+	private onCardClick: (id: string) => void;
+	constructor({ onCardClick }: { onCardClick: (id: string) => void }) {
+		const galleryEl = document.querySelector('.gallery');
+		if (!galleryEl) {
+			throw new Error('GalleryView: Gallery element was not found!');
+		}
 		this.galleryEl = galleryEl;
+		const cardTemplateEl = document.querySelector(
+			'#card-catalog'
+		) as HTMLTemplateElement | null;
+		if (!cardTemplateEl) {
+			throw new Error('GalleryView: Card template element was not found!');
+		}
 		this.cardTemplateEl = cardTemplateEl;
+		this.onCardClick = onCardClick;
 	}
 
 	public populateGallery(items: Product[]) {
@@ -49,34 +50,7 @@ export class GalleryView implements TGalleryView {
 		imageEl.src = `${CDN_URL}${image}`;
 		priceEl.textContent = price ? `${price.toString()} синапсов` : 'Бесценно';
 
-		cardElement.addEventListener('click', () =>
-			this.events.emit('preview:open', { id })
-		);
+		cardElement.addEventListener('click', () => this.onCardClick(id));
 		return cardElement;
-	}
-
-	public static initGalleryView({
-		queries,
-		config,
-	}: {
-		queries: {
-			gallery: string;
-			cardTemplate: string;
-		};
-		config: { events: EventEmitter };
-	}) {
-		const galleryEl = document.querySelector(queries.gallery);
-		if (!galleryEl) {
-			throw new Error('initGalleryView: Gallery element was not found!');
-		}
-
-		const cardTemplateEl = document.querySelector(
-			queries.cardTemplate
-		) as HTMLTemplateElement | null;
-		if (!cardTemplateEl) {
-			throw new Error('initGalleryView: Card template element was not found!');
-		}
-
-		return new GalleryView({ cardTemplateEl, galleryEl, ...config });
 	}
 }
