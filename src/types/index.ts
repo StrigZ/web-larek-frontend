@@ -37,6 +37,7 @@ export type BasketModel = {
 	items: Basket;
 	add: (id: string) => void;
 	remove: (id: string) => void;
+	clear: () => void;
 	events: EventEmitter;
 };
 

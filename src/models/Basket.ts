@@ -41,7 +41,10 @@ export class Basket implements BasketModel {
 		this.items.set(id, currIndex - 1);
 		this._changed();
 	}
-
+	clear() {
+		this.items = new Map<string, number>();
+		this._changed();
+	}
 	private _changed() {
 		console.log(this.items);
 

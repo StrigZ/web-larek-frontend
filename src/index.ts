@@ -21,6 +21,7 @@ import { BaseModalView } from './components/base/BaseModalView';
 import { GalleryView } from './components/view/GalleryView';
 import { CardDetails } from './components/view/CardDetails';
 import { ContactsForm } from './components/view/ContactForm';
+import { OrderConfirmationView } from './components/view/OrderConfirmationView';
 
 const events = new EventEmitter();
 const catalog = new Catalog(events);
@@ -48,6 +49,10 @@ const contactsFrom = new ContactsForm({
 	onPaymentDetailsChange: onContactsChange,
 });
 
+const orderConfirmationView = new OrderConfirmationView({
+	onCloseButtonClick: () => baseModalView.close(),
+});
+
 appState.events.on('preview:open', onPreviewOpen);
 
 appState.events.on('basket:add', onBasketAdd);
@@ -63,8 +68,21 @@ appState.events.on('order:submit', () => {
 });
 
 appState.events.on('contacts:submit', () => {
+	let total = 0;
+	let isPriceless = false;
+	const productsMap = appState.basket.items;
+	Array.from(productsMap).map(([productId, index]) => {
+		const product = appState.catalog.getItemById(productId);
+		if (!product.price) {
+			return (isPriceless = true);
+		}
+		total += product.price * index;
+	});
+	orderConfirmationView.render(isPriceless ? 'Бесценно' : total);
+	baseModalView.setContent(orderConfirmationView.getElement());
 	// make api request
 	// show final modal
+	appState.basket.clear();
 });
 
 function onOrderFormSubmit(details: Partial<OrderDetails>) {
