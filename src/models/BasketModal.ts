@@ -14,12 +14,14 @@ export class BasketModal extends Modal implements TBasketModal {
 	private itemListEl: Element;
 	private totalPriceEl: Element;
 	private openBasketButton: Element;
+	private goToOrderButton: HTMLButtonElement;
 	constructor({
 		modal,
 		itemListEl,
 		totalPriceEl,
 		cardTemplateEl,
 		openBasketButton,
+		goToOrderButton,
 		...modalConfig
 	}: BasketModalConstructor) {
 		super(modalConfig);
@@ -29,7 +31,7 @@ export class BasketModal extends Modal implements TBasketModal {
 		this.totalPriceEl = totalPriceEl;
 		this.cardTemplateEl = cardTemplateEl;
 		this.openBasketButton = openBasketButton;
-
+		this.goToOrderButton = goToOrderButton;
 		this._attachClickListeners();
 	}
 
@@ -94,6 +96,10 @@ export class BasketModal extends Modal implements TBasketModal {
 		this.openBasketButton.addEventListener('click', () =>
 			this.events.emit('basket:open')
 		);
+		this.goToOrderButton.addEventListener('click', () => {
+			this.events.emit('basket:close');
+			this.events.emit('order:open');
+		});
 	}
 
 	public static initBasketModal({
@@ -139,6 +145,12 @@ export class BasketModal extends Modal implements TBasketModal {
 				'initBasketModal: open basket button element was not found!'
 			);
 		}
+		const goToOrderButton = modal.querySelector(
+			'.modal__actions .button'
+		) as HTMLButtonElement | null;
+		if (!goToOrderButton)
+			throw new Error('initBasketModal: goToOrderButton was not found!');
+
 		itemListEl.innerHTML = 'Корзина пуста!';
 		totalPriceEl.textContent = '0 синапсов';
 
@@ -148,6 +160,7 @@ export class BasketModal extends Modal implements TBasketModal {
 			totalPriceEl,
 			cardTemplateEl,
 			openBasketButton,
+			goToOrderButton,
 			...modalConfig,
 		});
 	}

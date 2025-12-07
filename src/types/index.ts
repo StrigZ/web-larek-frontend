@@ -59,6 +59,7 @@ export type BasketModalConstructor = {
 	totalPriceEl: Element;
 	cardTemplateEl: HTMLTemplateElement;
 	openBasketButton: Element;
+	goToOrderButton: HTMLButtonElement;
 } & ModalConfig;
 
 export type ModalConfig = {
@@ -67,11 +68,6 @@ export type ModalConfig = {
 	modalContainerQuery: string;
 	events: EventEmitter;
 	catalog: Catalog;
-};
-
-export type Modal = {
-	showModal: (modal: Element) => void;
-	closeModal: (modal: Element) => void;
 };
 
 export type PreviewModal = {
@@ -113,3 +109,18 @@ export type GalleryView = {
 export type PreviewOpenEvent = { id: string };
 export type BasketAddEvent = { id: string };
 export type BasketRemoveEvent = { id: string };
+
+export type OrderFormModal = {
+	showOrder: () => void;
+	hideOrder: () => void;
+	populateOrderForm: (details: OrderForm) => void;
+};
+
+export type OrderModalConstructor = {
+	modal: Element;
+	formTemplate: HTMLTemplateElement;
+} & ModalConfig;
+
+export type OrderForm = Pick<OrderDetails, 'paymentVariant' | 'address'>;
+
+export type OrderSubmitEvent = { details: OrderForm };

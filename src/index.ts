@@ -14,9 +14,11 @@ import type {
 	BasketAddEvent,
 	BasketRemoveEvent,
 	ModalConfig,
+	OrderSubmitEvent,
 	PreviewOpenEvent,
 	ProductList,
 } from './types';
+import { OrderFormModal } from './models/OrderFormModal';
 
 const events = new EventEmitter();
 const catalog = new Catalog(events);
@@ -54,6 +56,14 @@ const previewModal = PreviewModal.initPreviewModal({
 	modalConfig,
 });
 
+const orderFormModal = OrderFormModal.initOrderFormModal({
+	queries: {
+		modal: '.modal:has(.order)',
+		formTemplate: '#order',
+	},
+	modalConfig,
+});
+
 const galleryView = GalleryView.initGalleryView({
 	queries: { cardTemplate: '#card-catalog', gallery: '.gallery' },
 	config: { events },
@@ -63,6 +73,7 @@ appState.events.on<PreviewOpenEvent>('preview:open', (event) =>
 	previewModal.showPreview(event.id)
 );
 appState.events.on('preview:close', () => previewModal.hidePreview());
+
 appState.events.on<BasketAddEvent>('basket:add', (event) =>
 	appState.basket.add(event.id)
 );
@@ -72,6 +83,16 @@ appState.events.on<BasketRemoveEvent>('basket:remove', (event) =>
 appState.events.on('basket:change', () => basketModal.updateBasket());
 appState.events.on('basket:open', () => basketModal.showModal());
 appState.events.on('basket:close', () => basketModal.closeModal());
+
+appState.events.on('order:open', () => {
+	orderFormModal.populateOrderForm(appState.orderDetails);
+	orderFormModal.showOrder();
+});
+appState.events.on('order:close', () => orderFormModal.hideOrder());
+appState.events.on<OrderSubmitEvent>('order:submit', ({ details }) => {
+	appState.orderDetails = { ...appState.orderDetails, ...details };
+	orderFormModal.hideOrder();
+});
 
 async function fetchProducts() {
 	return await apiClient.get<ProductList>('/product/');

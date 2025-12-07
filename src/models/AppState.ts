@@ -27,8 +27,4 @@ export class AppState implements AppStateModel {
 	setOrderDetails(details: Partial<OrderDetails>) {
 		this.orderDetails = { ...this.orderDetails, ...details };
 	}
-
-	protected _detailsChange() {
-		this.events.emit('details:change', this.orderDetails);
-	}
 }
