@@ -1,4 +1,4 @@
-import { OrderFormDetails, OrderForm as TOrderForm } from '../types/index';
+import { OrderFormDetails, OrderForm as TOrderForm } from '../../types/index';
 
 export class OrderForm implements TOrderForm {
 	private formEl: HTMLFormElement;

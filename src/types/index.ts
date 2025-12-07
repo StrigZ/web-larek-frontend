@@ -1,5 +1,4 @@
 import { EventEmitter } from '../components/base/events';
-import { Catalog } from '../models/Catalog';
 
 export type ProductList = {
 	total: number;
@@ -54,37 +53,10 @@ export type BasketView = {
 	getElement: () => void;
 };
 
-export type BasketViewConstructor = {
-	modal: Element;
-	itemListEl: Element;
-	totalPriceEl: Element;
-	cardTemplateEl: HTMLTemplateElement;
-	openBasketButton: Element;
-	goToOrderButton: HTMLButtonElement;
-};
-
-export type ModalConfig = {
-	activeModalClass: string;
-	closeButtonQuery: string;
-	modalContainerQuery: string;
-	events: EventEmitter;
-	catalog: Catalog;
-};
-
-export type Preview = {
+export type CardDetails = {
 	render: (product: Product) => void;
 	getElement: () => void;
 };
-
-export type PreviewModalConstructor = {
-	modal: Element;
-	titleEl: Element;
-	categoryEl: Element;
-	imageEl: HTMLImageElement;
-	priceEl: Element;
-	descriptionEl: Element;
-	addToBasketButton: Element;
-} & ModalConfig;
 
 export type PaymentVariant = 'Онлайн' | 'При получении';
 

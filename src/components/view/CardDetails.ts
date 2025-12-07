@@ -1,24 +1,25 @@
-import { Preview as TPreview, Product } from '../types';
-import { CDN_URL } from '../utils/constants';
+import { CardDetails as TCardDetails, Product } from '../../types';
+import { CDN_URL } from '../../utils/constants';
 
-export class Preview implements TPreview {
-	private previewEl: Element;
+export class CardDetails implements TCardDetails {
+	private cardDetailsEl: Element;
 
 	constructor({ onBasketAdd }: { onBasketAdd: (e: Event) => void }) {
-		const previewTemplate = document.querySelector(
+		const cardDetailsTemplate = document.querySelector(
 			'#card-preview'
 		) as HTMLTemplateElement | null;
-		if (!previewTemplate)
+		if (!cardDetailsTemplate)
 			throw new Error('Preview: preview template was not found!');
-		const clone = previewTemplate.content.cloneNode(true) as Element;
-		const previewEl = clone.firstElementChild;
-		if (!previewEl)
+		const clone = cardDetailsTemplate.content.cloneNode(true) as Element;
+		const cardDetailsEl = clone.firstElementChild;
+		if (!cardDetailsEl)
 			throw new Error(
 				'Preview: preview was not found inside preview template!'
 			);
 
-		this.previewEl = previewEl;
-		const addToBasketButton = this.previewEl.querySelector('.card__row button');
+		this.cardDetailsEl = cardDetailsEl;
+		const addToBasketButton =
+			this.cardDetailsEl.querySelector('.card__row button');
 		if (!addToBasketButton) {
 			throw new Error('initPreview: addToBasketButton was not found!');
 		}
@@ -26,25 +27,25 @@ export class Preview implements TPreview {
 	}
 
 	public render({ category, description, image, price, title }: Product) {
-		const titleEl = this.previewEl.querySelector('.card__title');
+		const titleEl = this.cardDetailsEl.querySelector('.card__title');
 		if (!titleEl) {
 			throw new Error('initPreview: titleEl was not found!');
 		}
-		const categoryEl = this.previewEl.querySelector('.card__category');
+		const categoryEl = this.cardDetailsEl.querySelector('.card__category');
 		if (!categoryEl) {
 			throw new Error('initPreview: categoryEl was not found!');
 		}
-		const imageEl = this.previewEl.querySelector(
+		const imageEl = this.cardDetailsEl.querySelector(
 			'.card__image'
 		) as HTMLImageElement | null;
 		if (!imageEl) {
 			throw new Error('initPreview: imageEl was not found!');
 		}
-		const priceEl = this.previewEl.querySelector('.card__price');
+		const priceEl = this.cardDetailsEl.querySelector('.card__price');
 		if (!priceEl) {
 			throw new Error('initPreview: priceEl was not found!');
 		}
-		const descriptionEl = this.previewEl.querySelector('.card__text');
+		const descriptionEl = this.cardDetailsEl.querySelector('.card__text');
 		if (!descriptionEl) {
 			throw new Error('initPreview: descriptionEl was not found!');
 		}
@@ -57,6 +58,6 @@ export class Preview implements TPreview {
 	}
 
 	public getElement() {
-		return this.previewEl;
+		return this.cardDetailsEl;
 	}
 }

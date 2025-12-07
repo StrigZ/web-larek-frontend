@@ -1,5 +1,5 @@
-import { Product, GalleryView as TGalleryView } from '../types';
-import { CDN_URL } from '../utils/constants';
+import { Product, GalleryView as TGalleryView } from '../../types';
+import { CDN_URL } from '../../utils/constants';
 
 export class GalleryView implements TGalleryView {
 	private galleryEl: Element;

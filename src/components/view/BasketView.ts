@@ -1,4 +1,4 @@
-import { Product, BasketView as TBasketView } from '../types';
+import { Product, BasketView as TBasketView } from '../../types';
 
 export class BasketView implements TBasketView {
 	private cardTemplateEl: HTMLTemplateElement;

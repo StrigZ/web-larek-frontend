@@ -5,7 +5,7 @@ import { EventEmitter } from './components/base/events';
 
 import { AppState } from './models/AppState';
 import { Basket } from './models/Basket';
-import { BasketView } from './models/BasketView';
+import { BasketView } from './components/view/BasketView';
 import { Catalog } from './models/Catalog';
 
 import type {
@@ -14,10 +14,10 @@ import type {
 	PreviewOpenEvent,
 	ProductList,
 } from './types';
-import { OrderForm } from './models/OrderForm';
+import { OrderForm } from './components/view/OrderForm';
 import { BaseModalView } from './components/base/BaseModalView';
-import { Preview } from './models/Preview';
-import { GalleryView } from './models/GalleryView';
+import { GalleryView } from './components/view/GalleryView';
+import { CardDetails } from './components/view/CardDetails';
 
 const events = new EventEmitter();
 const catalog = new Catalog(events);
@@ -103,7 +103,7 @@ function onBasketAdd({ id }: BasketAddEvent) {
 }
 function onPreviewOpen({ id }: PreviewOpenEvent) {
 	const productData = appState.catalog.getItemById(id);
-	const preview = new Preview({
+	const preview = new CardDetails({
 		onBasketAdd: () => appState.basket.add(id),
 	});
 	preview.render(productData);
