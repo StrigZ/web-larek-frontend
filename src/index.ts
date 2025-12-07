@@ -11,6 +11,7 @@ import { Catalog } from './models/Catalog';
 import type {
 	BasketAddEvent,
 	BasketRemoveEvent,
+	OrderDetails,
 	PreviewOpenEvent,
 	ProductList,
 } from './types';
@@ -38,6 +39,7 @@ const galleryView = new GalleryView({
 
 const orderForm = new OrderForm({
 	onSubmit: onOrderFormSubmit,
+	onPaymentDetailsChange: onPaymentDetailsChange,
 });
 
 appState.events.on('preview:open', onPreviewOpen);
@@ -54,28 +56,12 @@ appState.events.on('order:submit', () => {
 	// show modal view ?
 });
 
-function onOrderFormSubmit(e: Event) {
-	e.preventDefault();
-	const form = e.currentTarget as HTMLFormElement | null;
-	if (!form) return;
-
-	const formData = new FormData(form);
-	const formObject = Object.fromEntries(formData) as Partial<OrderForm>;
-
-	const elements = form.elements;
-	const isCashPayment = (
-		elements.namedItem('cash') as HTMLElement
-	).classList.contains('button_alt-active');
-
-	appState.setOrderDetails({
-		...formObject,
-		paymentVariant: isCashPayment ? 'При получении' : 'Онлайн',
-	});
-
+function onOrderFormSubmit(details: Partial<OrderDetails>) {
+	appState.setOrderDetails(details);
 	appState.events.emit('order:submit');
 }
 function onOrderOpen() {
-	orderForm.render(appState.orderDetails);
+	orderForm.reset();
 	baseModalView.setContent(orderForm.getElement());
 	baseModalView.open();
 }
@@ -109,6 +95,15 @@ function onPreviewOpen({ id }: PreviewOpenEvent) {
 	preview.render(productData);
 	baseModalView.setContent(preview.getElement());
 	baseModalView.open();
+}
+function onPaymentDetailsChange(details: Partial<OrderDetails>) {
+	if (!details.address) {
+		orderForm.setError('Адрес не может быть пустым!');
+		orderForm.setSubmitButtonStatus(false);
+		return;
+	}
+	orderForm.setError('');
+	orderForm.setSubmitButtonStatus(true);
 }
 async function fetchProducts() {
 	return await apiClient.get<ProductList>('/product/');
