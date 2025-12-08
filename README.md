@@ -171,7 +171,7 @@ yarn build
   email: string;
   phone: string;
   payment: 'online' | 'cash';
-  total: number | 'Бесценно';
+  total: number ;
   items: Product['id'][];
 }
 ```
