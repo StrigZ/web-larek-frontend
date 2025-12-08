@@ -28,26 +28,13 @@ export class AppState implements AppStateModel {
 	public getOrderRequestBody(): OrderRequestBody {
 		const paymentVariant =
 			this.orderDetails.paymentVariant === 'Онлайн' ? 'online' : 'cash';
-		const itemsArray: string[] = [];
 
-		let total = 0;
-		let isPriceless = false;
-		Array.from(this.basket.items).map(([productId, index]) => {
-			for (let i = 0; i < index; i++) {
-				itemsArray.push(productId);
-			}
-			const product = this.catalog.getItemById(productId);
-			if (!product.price) {
-				return (isPriceless = true);
-			}
-			total += product.price * index;
-		});
 		return {
 			...this.orderDetails,
 			phone: this.orderDetails.phoneNumber,
 			payment: paymentVariant,
-			total: isPriceless ? 'Бесценно' : total,
-			items: itemsArray,
+			total: this.basket.getTotal(),
+			items: this.basket.getItemsArray().map(({ id }) => id),
 		};
 	}
 	public setOrderDetails(details: Partial<OrderDetails>) {

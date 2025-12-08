@@ -24,21 +24,26 @@ import { CardDetails } from './components/view/CardDetails';
 import { ContactsForm } from './components/view/ContactForm';
 import { OrderConfirmationView } from './components/view/OrderConfirmationView';
 
-const events = new EventEmitter();
-const catalog = new Catalog(events);
-const basket = new Basket(events);
-const appState = new AppState(basket, catalog, events);
+const appState = new AppState(
+	new Basket({
+		onBasketChange: () => appState.events.emit('basket:change'),
+	}),
+	new Catalog(),
+	new EventEmitter()
+);
 
 const baseModalView = new BaseModalView();
 
 const basketView = new BasketView({
 	onStartOrder: () => appState.events.emit('order:open'),
-	onBasketItemRemove: (id) => appState.events.emit('basket:remove', { id }),
+	onBasketItemRemove: (product) =>
+		appState.events.emit<BasketRemoveEvent>('basket:remove', { product }),
 	onBasketOpen: () => appState.events.emit('basket:open'),
 });
 
 const galleryView = new GalleryView({
-	onCardClick: (id: string) => appState.events.emit('preview:open', { id }),
+	onCardClick: (product) =>
+		appState.events.emit<PreviewOpenEvent>('preview:open', { product }),
 });
 
 const orderForm = new OrderForm({
@@ -54,15 +59,15 @@ const orderConfirmationView = new OrderConfirmationView({
 	onCloseButtonClick: () => baseModalView.close(),
 });
 
-appState.events.on('preview:open', onPreviewOpen);
-
-appState.events.on<BasketAddEvent>('basket:add', ({ id }) =>
-	appState.basket.add(id)
-);
-appState.events.on<BasketRemoveEvent>('basket:remove', ({ id }) =>
-	appState.basket.remove(id)
-);
+appState.events.on<PreviewOpenEvent>('preview:open', onPreviewOpen);
 appState.events.on('basket:change', onBasketChange);
+
+appState.events.on<BasketAddEvent>('basket:add', ({ product }) =>
+	appState.basket.add(product)
+);
+appState.events.on<BasketRemoveEvent>('basket:remove', ({ product }) =>
+	appState.basket.remove(product)
+);
 appState.events.on('basket:open', onBasketOpen);
 
 appState.events.on('order:open', onOrderOpen);
@@ -75,17 +80,8 @@ appState.events.on('order:submit', () => {
 appState.events.on<OnConfirmPurchase>('contacts:submit', (event) => {
 	confirmPurchase(event)
 		.then(() => {
-			let total = 0;
-			let isPriceless = false;
-			const productsMap = appState.basket.items;
-			Array.from(productsMap).map(([productId, index]) => {
-				const product = appState.catalog.getItemById(productId);
-				if (!product.price) {
-					return (isPriceless = true);
-				}
-				total += product.price * index;
-			});
-			orderConfirmationView.render(isPriceless ? 'Бесценно' : total);
+			appState.basket.getTotal();
+			orderConfirmationView.render(appState.basket.getTotal());
 			baseModalView.setContent(orderConfirmationView.getElement());
 
 			appState.basket.clear();
@@ -104,23 +100,21 @@ function onOrderOpen() {
 }
 
 function onBasketChange() {
-	const productMap = Array.from(appState.basket.items).map(
-		([productId, index]) => {
-			const product = appState.catalog.getItemById(productId);
-			return { ...product, index };
-		}
-	);
-	basketView.render(productMap);
+	basketView.render({
+		productsArray: appState.basket.getItemsArray(),
+		total: appState.basket.getTotal(),
+		productsMap: appState.basket.getItemsMap(),
+	});
 }
 function onBasketOpen() {
 	baseModalView.setContent(basketView.getElement());
 	baseModalView.open();
 }
 
-function onPreviewOpen({ id }: PreviewOpenEvent) {
-	const productData = appState.catalog.getItemById(id);
+function onPreviewOpen({ product }: PreviewOpenEvent) {
+	const productData = appState.catalog.getItemById(product.id);
 	const preview = new CardDetails({
-		onBasketAdd: () => appState.basket.add(id),
+		onBasketAdd: () => appState.events.emit('basket:add', { product }),
 	});
 	preview.render(productData);
 	baseModalView.setContent(preview.getElement());

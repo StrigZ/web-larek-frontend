@@ -7,14 +7,14 @@ export class BasketView implements TBasketView {
 	private openBasketButton: Element;
 	private goToOrderButton: HTMLButtonElement;
 	private basketEl: Element;
-	private onBasketItemRemove: (id: string) => void;
+	private onBasketItemRemove: (product: Product) => void;
 	constructor({
 		onStartOrder,
 		onBasketItemRemove,
 		onBasketOpen,
 	}: {
 		onStartOrder: (e: Event) => void;
-		onBasketItemRemove: (id: string) => void;
+		onBasketItemRemove: (product: Product) => void;
 		onBasketOpen: () => void;
 	}) {
 		const basketTemplate = document.querySelector(
@@ -76,25 +76,28 @@ export class BasketView implements TBasketView {
 		openBasketButton.addEventListener('click', onBasketOpen);
 	}
 
-	public render(products: (Product & { index: number })[]) {
+	public render({
+		productsArray,
+		productsMap,
+		total,
+	}: {
+		productsMap: Map<string, number>;
+		productsArray: Product[];
+		total: number;
+	}) {
 		this.itemListEl.innerHTML = '';
-		let totalPrice = 0;
-		let isPriceless = false;
-		if (products.length > 0) {
-			products.forEach(({ index, ...product }) => {
-				if (product.price && !isPriceless) {
-					totalPrice += product.price * index;
-				} else {
-					isPriceless = true;
-				}
+		const uniqueItemsArray = Array.from(new Set(productsArray));
+		if (total > 0) {
+			uniqueItemsArray.forEach((product) => {
+				const index = productsMap.get(product.id);
+				if (!index) return;
 
 				return this.itemListEl.append(
 					this._createBasketItem(product, index.toString())
 				);
 			});
-			this.totalPriceEl.textContent = isPriceless
-				? 'Бесценно'
-				: totalPrice.toString();
+
+			this.totalPriceEl.textContent = `${total.toString()} синапсов`;
 		} else {
 			this.totalPriceEl.textContent = '0 синапсов';
 			this.itemListEl.textContent = 'Корзина пуста!';
@@ -106,7 +109,7 @@ export class BasketView implements TBasketView {
 	}
 
 	private _createBasketItem(data: Product, index: string) {
-		const { price, title, id } = data;
+		const { price, title } = data;
 		const card = this.cardTemplateEl.content.cloneNode(
 			true
 		) as DocumentFragment;
@@ -122,7 +125,7 @@ export class BasketView implements TBasketView {
 		titleEl.textContent = title;
 		priceEl.textContent = price ? `${price.toString()} синапсов` : 'Бесценно';
 		indexEl.textContent = index;
-		deleteButton.addEventListener('click', () => this.onBasketItemRemove(id));
+		deleteButton.addEventListener('click', () => this.onBasketItemRemove(data));
 		return cardElement;
 	}
 }

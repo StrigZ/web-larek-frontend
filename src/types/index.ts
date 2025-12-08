@@ -34,11 +34,13 @@ export type ProductCategory =
 export type Basket = Map<Product['id'], number>;
 
 export type BasketModel = {
-	items: Basket;
-	add: (id: string) => void;
-	remove: (id: string) => void;
+	add: (product: Product) => void;
+	remove: (product: Product) => void;
+	getTotal: () => number;
+	getItemCount: () => number;
 	clear: () => void;
-	events: EventEmitter;
+	getItemsMap: () => Map<string, number>;
+	getItemsArray: () => Product[];
 };
 
 export type CatalogModel = {
@@ -46,11 +48,14 @@ export type CatalogModel = {
 	setItems: (items: Product[]) => void;
 	getItemById: (id: string) => Product;
 	getItems: () => Product[];
-	events: EventEmitter;
 };
 
 export type BasketView = {
-	render: (products: (Product & { index: number })[]) => void;
+	render: (args: {
+		productsMap: Map<string, number>;
+		productsArray: Product[];
+		total: number;
+	}) => void;
 	getElement: () => void;
 };
 
@@ -80,9 +85,9 @@ export type GalleryView = {
 	populateGallery: (items: Product[]) => void;
 };
 
-export type PreviewOpenEvent = { id: string };
-export type BasketAddEvent = { id: string };
-export type BasketRemoveEvent = { id: string };
+export type PreviewOpenEvent = { product: Product };
+export type BasketAddEvent = { product: Product };
+export type BasketRemoveEvent = { product: Product };
 
 export type OrderFormModal = {
 	showOrderForm: () => void;

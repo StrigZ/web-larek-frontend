@@ -1,18 +1,14 @@
-import { EventEmitter } from '../components/base/events';
 import { CatalogModel, Product } from '../types';
 
 export class Catalog implements CatalogModel {
 	items: Product[] = [];
-	events: EventEmitter;
 
-	constructor(events: EventEmitter) {
+	constructor() {
 		this.items = [];
-		this.events = events;
 	}
 
 	setItems(items: Product[]) {
 		this.items = items;
-		this._loaded();
 	}
 	getItemById(id: string) {
 		const item = this.items.find((item) => item.id === id);
@@ -26,9 +22,5 @@ export class Catalog implements CatalogModel {
 	}
 	getItems() {
 		return this.items;
-	}
-
-	protected _loaded() {
-		this.events.emit('catalog:loaded');
 	}
 }

@@ -4,8 +4,8 @@ import { CDN_URL } from '../../utils/constants';
 export class GalleryView implements TGalleryView {
 	private galleryEl: Element;
 	private cardTemplateEl: HTMLTemplateElement;
-	private onCardClick: (id: string) => void;
-	constructor({ onCardClick }: { onCardClick: (id: string) => void }) {
+	private onCardClick: (product: Product) => void;
+	constructor({ onCardClick }: { onCardClick: (product: Product) => void }) {
 		const galleryEl = document.querySelector('.gallery');
 		if (!galleryEl) {
 			throw new Error('GalleryView: Gallery element was not found!');
@@ -27,7 +27,8 @@ export class GalleryView implements TGalleryView {
 		);
 	}
 
-	private _createProductCard({ category, image, price, title, id }: Product) {
+	private _createProductCard(product: Product) {
+		const { category, image, price, title } = product;
 		const card = this.cardTemplateEl.content.cloneNode(
 			true
 		) as DocumentFragment;
@@ -50,7 +51,7 @@ export class GalleryView implements TGalleryView {
 		imageEl.src = `${CDN_URL}${image}`;
 		priceEl.textContent = price ? `${price.toString()} синапсов` : 'Бесценно';
 
-		cardElement.addEventListener('click', () => this.onCardClick(id));
+		cardElement.addEventListener('click', () => this.onCardClick(product));
 		return cardElement;
 	}
 }

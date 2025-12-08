@@ -1,52 +1,73 @@
-import { EventEmitter } from '../components/base/events';
-import { BasketModel } from '../types';
+import { BasketModel, Product } from '../types';
 
 export class Basket implements BasketModel {
-	items = new Map<string, number>();
-	events: EventEmitter;
-
-	constructor(events: EventEmitter) {
-		this.items = new Map<string, number>();
-		this.events = events;
+	private items = new Map<string, number>();
+	private itemsArray: Product[] = [];
+	private onBasketChange: () => void;
+	constructor({ onBasketChange }: { onBasketChange: () => void }) {
+		this.onBasketChange = onBasketChange;
 	}
 
-	add(id: string) {
-		const doesExist = this.items.has(id);
+	public add(product: Product) {
+		if (!product.price) return;
+
+		this.itemsArray.push(product);
+
+		const doesExist = this.items.has(product.id);
 		if (doesExist) {
-			const currIndex = this.items.get(id);
+			const currIndex = this.items.get(product.id);
 			if (!currIndex) return;
-			this.items.set(id, currIndex + 1);
+
+			this.items.set(product.id, currIndex + 1);
 		} else {
-			this.items.set(id, 1);
+			this.items.set(product.id, 1);
 		}
 		this._changed();
 	}
 
-	remove(id: string) {
-		const doesExist = this.items.has(id);
+	public remove(product: Product) {
+		const idx = this.itemsArray.findIndex(({ id }) => id === product.id);
+		if (idx > 0) {
+			this.itemsArray.splice(idx, 1);
+		}
+
+		const doesExist = this.items.has(product.id);
 		if (!doesExist) {
 			return;
 		}
 
-		const currIndex = this.items.get(id);
+		const currIndex = this.items.get(product.id);
 		if (!currIndex) return;
 
 		if (currIndex === 1) {
-			this.items.delete(id);
+			this.items.delete(product.id);
 			this._changed();
 			return;
 		}
 
-		this.items.set(id, currIndex - 1);
+		this.items.set(product.id, currIndex - 1);
 		this._changed();
 	}
-	clear() {
+	public getTotal() {
+		return this.itemsArray.reduce((prev, curr) => prev + (curr.price ?? 0), 0);
+	}
+	public getItemCount() {
+		return Array.from(this.items.keys()).reduce(
+			(prev, curr) => +curr + prev,
+			0
+		);
+	}
+	public getItemsMap() {
+		return this.items;
+	}
+	public getItemsArray() {
+		return this.itemsArray;
+	}
+	public clear() {
 		this.items = new Map<string, number>();
 		this._changed();
 	}
 	private _changed() {
-		console.log(this.items);
-
-		this.events.emit('basket:change');
+		this.onBasketChange();
 	}
 }
