@@ -1,16 +1,16 @@
 import { CatalogModel, Product } from '../types';
 
 export class Catalog implements CatalogModel {
-	items: Product[] = [];
+	private items: Product[] = [];
 
 	constructor() {
 		this.items = [];
 	}
 
-	setItems(items: Product[]) {
+	public setItems(items: Product[]) {
 		this.items = items;
 	}
-	getItemById(id: string) {
+	public getItemById(id: string) {
 		const item = this.items.find((item) => item.id === id);
 		if (!item) {
 			throw new Error(
@@ -20,7 +20,7 @@ export class Catalog implements CatalogModel {
 
 		return item;
 	}
-	getItems() {
+	public getItems() {
 		return this.items;
 	}
 }
