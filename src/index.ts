@@ -25,6 +25,7 @@ import { GalleryView } from './components/view/GalleryView';
 import { CardDetails } from './components/view/CardDetails';
 import { ContactsForm } from './components/view/ContactsForm';
 import { OrderConfirmationView } from './components/view/OrderConfirmationView';
+import { HeaderView } from './components/view/HeaderView';
 
 const appState = new AppState(
 	new Basket({
@@ -36,6 +37,7 @@ const appState = new AppState(
 
 const baseModalView = new BaseModalView();
 
+const headerView = new HeaderView();
 const basketView = new BasketView({
 	onStartOrder: () => appState.events.emit('order:open'),
 	onBasketItemRemove: (product) =>
@@ -103,6 +105,7 @@ function handleBasketChange() {
 		total: appState.basket.getTotal(),
 		productsMap: appState.basket.getItemsMap(),
 	});
+	headerView.render(appState.basket.getItemsCount());
 }
 function handleBasketAdd({ product }: BasketAddEvent) {
 	appState.basket.add(product);
@@ -162,6 +165,7 @@ function handleContactsFormSubmit({ details }: ContactsFormSubmitEvent) {
 			baseModalView.setContent(orderConfirmationView.getElement());
 
 			appState.basket.clear();
+			headerView.reset();
 		})
 		.catch((e) => console.log('Error: ' + e));
 }

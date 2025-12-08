@@ -51,11 +51,8 @@ export class Basket implements BasketModel {
 	public getTotal() {
 		return this.itemsArray.reduce((prev, curr) => prev + (curr.price ?? 0), 0);
 	}
-	public getItemCount() {
-		return Array.from(this.items.keys()).reduce(
-			(prev, curr) => +curr + prev,
-			0
-		);
+	public getItemsCount() {
+		return this.itemsArray.length;
 	}
 	public getItemsMap() {
 		return this.items;
