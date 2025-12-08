@@ -4,45 +4,45 @@
 
 Структура проекта:
 
-- src/ — исходные файлы проекта
-- src/components/ — папка с JS компонентами
-- src/components/base/ — папка с базовым компонентами
-- src/components/view/ — папка с компонентами отображения
+- `src/` — исходные файлы проекта
+- `src/components/` — папка с JS компонентами
+- `src/components/base/` — папка с базовыми компонентами
+- `src/components/view/` — папка с компонентами отображения
 
 Важные файлы:
 
-- src/pages/index.html — HTML-файл главной страницы
-- src/types/index.ts — файл с типами
-- src/index.ts — точка входа приложения
-- src/scss/styles.scss — корневой файл стилей
-- src/utils/constants.ts — файл с константами
-- src/utils/utils.ts — файл с утилитами
+- `src/pages/index.html` — HTML-файл главной страницы
+- `src/types/index.ts` — файл с типами
+- `src/index.ts` — точка входа приложения
+- `src/scss/styles.scss` — корневой файл стилей
+- `src/utils/constants.ts` — файл с константами
+- `src/utils/utils.ts` — файл с утилитами
 
 ## Установка и запуск
 
-Для установки и запуска проекта необходимо выполнить команды
+Для установки и запуска проекта необходимо выполнить команды:
 
-```
+```bash
 npm install
 npm run start
 ```
 
 или
 
-```
+```bash
 yarn
 yarn start
 ```
 
 ## Сборка
 
-```
+```bash
 npm run build
 ```
 
 или
 
-```
+```bash
 yarn build
 ```
 
@@ -52,87 +52,61 @@ yarn build
 
 ### **Api**
 
-(src/components/base/api.ts)
+(`src/components/base/api.ts`)
 
-Назначение:
-Выполнение HTTP-запросов к серверу и обработка ответов.
-
-Конструктор:
-`constructor(baseUrl: string, options: RequestInit = {})`
-
-Параметры:
-
-- `baseUrl`: Базовый URL для API.
-- `options`: Объект настроек запроса
-
-Поля:
-
-- `baseUrl: string` - хранит базовый URL.
-- `options: RequestInit` - настройки для запросов.
-
-Методы:
-
-- `get(uri: string): Promise<T>` Выполняет GET запрос по указанному URI и возвращает промис с данными.
-- `post(uri: string, data: object, method?: 'POST' | 'PUT' | 'DELETE'): Promise<T>` Выполняет запрос с отправкой данных.
+- **Назначение**: Выполнение HTTP-запросов к серверу и обработка ответов.
+- **Конструктор**: `constructor(baseUrl: string, options: RequestInit = {})`
+- **Параметры**:
+  - `baseUrl`: Базовый URL для API.
+  - `options`: Объект настроек запроса
+- **Поля**:
+  - `baseUrl: string` - хранит базовый URL.
+  - `options: RequestInit` - настройки для запросов.
+- **Методы**:
+  - `get(uri: string): Promise<T>` Выполняет GET запрос по указанному URI и возвращает промис с данными.
+  - `post(uri: string, data: object, method?: 'POST' | 'PUT' | 'DELETE'): Promise<T>` Выполняет запрос с отправкой данных.
 
 ### **EventEmitter**
 
-(src/components/base/events.ts)
+(`src/components/base/events.ts`)
 
-Назначение:
-Реализует механизм событий для связи между компонентами приложения.
-
-Конструктор:
-`constructor()` Не принимает параметров, инициализирует внутреннюю карту слушателей.
-
-Поля:
-
-- `_events: Map<string | RegExp, Set>` карта, где ключ — имя события или RegExp для шаблонного поиска, а значение — набор обработчиков.
-
-Методы:
-
-- `on(event: string | RegExp, callback: (data: T) => void): void` Регистрирует обработчик для указанного события.
-- `off(event: string | RegExp, callback: Function): void` Удаляет зарегистрированный обработчик для события.
-- `emit(event: string, data?: T): void` Инициирует событие с заданным именем, вызывая все соответствующие обработчики и передавая им данные.
-- `onAll(callback: (event: { eventName: string; data: any }) => void): void` Регистрирует обработчик, реагирующий на все события.
-- `offAll(): void` Удаляет все зарегистрированные обработчики.
-- `trigger(event: string, context?: Partial): (data: T) => void` Возвращает функцию, которая при вызове объединяет переданные данные с контекстом и инициирует событие.
+- **Назначение**: Реализует механизм событий для связи между компонентами приложения.
+- **Конструктор**: `constructor()` Не принимает параметров, инициализирует внутреннюю карту слушателей.
+- **Поля**:
+  - `_events: Map<string | RegExp, Set>` карта, где ключ — имя события или RegExp для шаблонного поиска, а значение — набор обработчиков.
+- **Методы**:
+  - `on(event: string | RegExp, callback: (data: T) => void): void` Регистрирует обработчик для указанного события.
+  - `off(event: string | RegExp, callback: Function): void` Удаляет зарегистрированный обработчик для события.
+  - `emit(event: string, data?: T): void` Инициирует событие с заданным именем, вызывая все соответствующие обработчики и передавая им данные.
+  - `onAll(callback: (event: { eventName: string; data: any }) => void): void` Регистрирует обработчик, реагирующий на все события.
+  - `offAll(): void` Удаляет все зарегистрированные обработчики.
+  - `trigger(event: string, context?: Partial): (data: T) => void` Возвращает функцию, которая при вызове объединяет переданные данные с контекстом и инициирует событие.
 
 ### **BaseElementView**
 
-(src/components/base/BaseElementView.ts)
+(`src/components/base/BaseElementView.ts`)
 
-**Назначение**: Базовый абстрактный класс для представления UI-компонентов, обеспечивающий общий интерфейс для работы с DOM-элементами.
-
-**Конструктор**: Не имеет публичного конструктора (абстрактный класс).
-
-**Поля**:
-
-- `protected abstract baseElement: Element` - абстрактное защищенное поле для хранения DOM-элемента компонента.
-
-**Методы**:
-
-- `getElement(): Element` - возвращает DOM-элемент компонента.
-- `abstract render(...args: unknown[]): void` - абстрактный метод для отрисовки компонента, должен быть реализован в наследниках.
+- **Назначение**: Базовый абстрактный класс для представления UI-компонентов, обеспечивающий общий интерфейс для работы с DOM-элементами.
+- **Конструктор**: Не имеет публичного конструктора (абстрактный класс).
+- **Поля**:
+  - `protected abstract baseElement: Element` - абстрактное защищенное поле для хранения DOM-элемента компонента.
+- **Методы**:
+  - `getElement(): Element` - возвращает DOM-элемент компонента.
+  - `abstract render(...args: unknown[]): void` - абстрактный метод для отрисовки компонента, должен быть реализован в наследниках.
 
 ### **BaseFormView**
 
-(src/components/base/BaseFormView.ts)
+(`src/components/base/BaseFormView.ts`)
 
-**Назначение**: Управление формами с обработкой ошибок и состоянием кнопки отправки.
-
-**Конструктор**: Не имеет публичного конструктора (абстрактный класс).
-
-**Поля**:
-
-- `errorContainer: Element` - контейнер для ошибок
-- `submitButton: HTMLButtonElement` - кнопка отправки
-
-**Методы**:
-
-- `setError(message)` - устанавливает текст ошибки
-- `setSubmitButtonStatus(isActive)` - управляет состоянием кнопки
-- `abstract reset()` - абстрактный метод для сброса формы, должен быть реализован в наследниках.
+- **Назначение**: Абстрактный класс для представления UI-форм с обработкой ошибок и управлением состоянием кнопки отправки.
+- **Конструктор**: `constructor()` - вызывает конструктор родительского класса BaseElementView.
+- **Поля**:
+  - `protected abstract errorContainer: Element` - абстрактное защищенное поле для контейнера сообщений об ошибках.
+  - `protected abstract submitButton: HTMLButtonElement` - абстрактное защищенное поле для кнопки отправки формы.
+- **Методы**:
+  - `setError(message: string): void` - устанавливает текст сообщения об ошибке.
+  - `setSubmitButtonStatus(isActive: boolean): void` - управляет состоянием кнопки отправки.
+  - `abstract reset(): void` - абстрактный метод для сброса формы к исходному состоянию.
 
 ## **Типы приложения (src/types.ts)**
 
@@ -160,7 +134,7 @@ yarn build
 }
 ```
 
-**Basket** - корзина `(Map<Product['id'], number>)`
+**Basket** - корзина (Map<Product['id'], number>)
 
 ### **Категории**
 
@@ -204,66 +178,118 @@ yarn build
 
 ### **Модели данных**
 
-**BasketModel** - модель корзины
+#### **BasketModel**
 
-```typescript
-{
-  add(product): void;
-  remove(product): void;
-  getTotal(): number;
-  getItemsCount(): number;
-  clear(): void;
-  getItemsMap(): Map<string, number>;
-  getItemsArray(): Product[];
-}
-```
+- **Назначение**: Управление корзиной покупок
+- **Методы**:
+  - `add(product: Product): void` – добавляет товар в корзину
+  - `remove(product: Product): void` – удаляет товар из корзины
+  - `getTotal(): number` – вычисляет общую стоимость корзины
+  - `getItemsCount(): number` – возвращает количество товаров в корзине
+  - `clear(): void` – очищает корзину
+  - `getItemsMap(): Map<string, number>` – возвращает карту товаров
+  - `getItemsArray(): Product[]` – возвращает массив товаров
 
-**CatalogModel** - модель каталога
+#### **CatalogModel**
 
-```typescript
-{
-  setItems(items): void;
-  getItemById(id): Product;
-  getItems(): Product[];
-}
-```
+- **Назначение**: Управление каталогом товаров
+- **Методы**:
+  - `setItems(items: Product[]): void` – устанавливает список товаров
+  - `getItemById(id: string): Product` – возвращает товар по ID
+  - `getItems(): Product[]` – возвращает все товары
 
-**AppStateModel** - модель состояния приложения
+#### **AppStateModel**
 
-```typescript
-{
-  getOrderRequestBody(): OrderRequestBody;
-  getBasket(): BasketModel;
-  getCatalog(): CatalogModel;
-  getEvents(): EventEmitter;
-  setOrderDetails(details): void;
-}
-```
+- **Назначение**: Центральное состояние приложения
+- **Методы**:
+  - `getOrderRequestBody(): OrderRequestBody` – формирует данные для заказа
+  - `getBasket(): BasketModel` – возвращает модель корзины
+  - `getCatalog(): CatalogModel` – возвращает модель каталога
+  - `getEvents(): EventEmitter` – возвращает шину событий
+  - `setOrderDetails(details: OrderFormDetails | ContactsFormDetails): void` – обновляет данные заказа
 
 ### **Компоненты (View)**
 
-**BaseElementView** - базовый компонент
+#### **BaseElementView**
 
-```typescript
-{
-  render(...args): void;
-  getElement(): Element;
-}
-```
+- **Назначение**: Базовый интерфейс для всех UI-компонентов
+- **Методы**:
+  - `render(...args: unknown[]): void` – отрисовывает компонент
+  - `getElement(): Element` – возвращает DOM-элемент компонента
 
-**BaseFormView** - базовая форма
+#### **BaseFormView**
 
-```typescript
-{
-  reset(): void;
-  setError(message): void;
-  setSubmitButtonStatus(isActive): void;
-}
-```
+- **Назначение**: Базовый интерфейс для всех форм
+- **Методы**:
+  - `reset(): void` – сбрасывает форму
+  - `setError(message: string): void` – устанавливает текст ошибки
+  - `setSubmitButtonStatus(isActive: boolean): void` – управляет состоянием кнопки отправки
 
-### **События (Events)**
+### **Классы отображения**
 
-**PreviewOpenEvent** - открытие превью товара
+#### **BasketView**
+
+- **Назначение**: Отображение корзины покупок
+- **Методы**:
+  - `render(args: { productsMap: Map<string, number>, productsArray: Product[], total: number }): void` – отрисовывает корзину
+- **Параметры конструктора (события)**:
+  - `onStartOrder: (e: Event) => void` – начало оформления заказа
+  - `onBasketItemRemove: (product: Product) => void` – удаление товара из корзины
+  - `onBasketOpen: () => void` – открытие корзины
+
+#### **OrderForm**
+
+- **Назначение**: Форма оформления заказа (адрес и способ оплаты)
+- **Методы**:
+  - `render(details: OrderFormDetails): void` – отрисовывает форму
+- **Параметры конструктора (события)**:
+  - `onSubmit: (details: OrderFormDetails) => void` – отправка формы
+  - `onOrderDetailsChange: (details: OrderFormDetails) => void` – изменение данных формы
+
+#### **ContactsForm**
+
+- **Назначение**: Форма контактных данных
+- **Методы**:
+  - `render(details: ContactsFormDetails): void` – отрисовывает форму
+- **Параметры конструктора (события)**:
+  - `onSubmit: (details: ContactsFormDetails) => void` – отправка формы
+  - `onOrderDetailsChange: (details: ContactsFormDetails) => void` – изменение данных формы
+
+#### **GalleryView**
+
+- **Назначение**: Отображение каталога товаров
+- **Методы**:
+  - `render(items: Product[]): void` – отрисовывает галерею товаров
+- **Параметры конструктора (события)**:
+  - `onCardClick: (product: Product) => void` – клик по карточке товара
+
+#### **HeaderView**
+
+- **Назначение**: Отображение шапки приложения
+- **Методы**:
+  - `render(totalItemsCount: number): void` – отрисовывает шапку с количеством товаров
+
+#### **OrderConfirmationView**
+
+- **Назначение**: Подтверждение заказа
+- **Методы**:
+  - `render(totalPrice: number): void` – отрисовывает подтверждение заказа
+- **Параметры конструктора (события)**:
+  - `onCloseButtonClick: () => void` – закрытие окна подтверждения
+
+#### **CardDetails**
+
+- **Назначение**: Детальная информация о товаре
+- **Методы**:
+  - `render(product: Product): void` – отрисовывает детали товара
+- **Параметры конструктора (события)**:
+  - `onBasketAdd: (e: Event) => void` – добавление товара в корзину
+
+## **События приложения**
+
+### **Открытие товара**
+
+- **details:open** - открытие детальной карточки товара
 
 ```typescript
 {
@@ -271,7 +297,9 @@ yarn build
 }
 ```
 
-**BasketAddEvent** - добавление в корзину
+### **Корзина**
+
+- **basket:add** - добавление товара в корзину
 
 ```typescript
 {
@@ -279,7 +307,7 @@ yarn build
 }
 ```
 
-**BasketRemoveEvent** - удаление из корзины
+- **basket:remove** - удаление товара из корзины
 
 ```typescript
 {
@@ -287,7 +315,13 @@ yarn build
 }
 ```
 
-**OrderFormSubmitEvent** - отправка формы заказа
+- **basket:change** - изменение состояния корзины (без данных)
+- **basket:open** - открытие модального окна корзины (без данных)
+
+### **Оформление заказа**
+
+- **order:open** - открытие формы заказа (без данных)
+- **order:change** - изменение данных в форме заказа
 
 ```typescript
 {
@@ -295,7 +329,18 @@ yarn build
 }
 ```
 
-**ContactsFormSubmitEvent** - отправка контактов
+- **order:submit** - отправка формы заказа
+
+```typescript
+{
+	details: OrderFormDetails;
+}
+```
+
+### **Контактные данные**
+
+- **contacts:open** - открытие формы контактов (без данных)
+- **contacts:change** - изменение данных в форме контактов
 
 ```typescript
 {
@@ -303,231 +348,10 @@ yarn build
 }
 ```
 
-#### **BasketModel**
-
-**Назначение**: Управление корзиной покупок
-
-**Поля**:
-
-- `items: Map<Product['id'], number>` — товары и их количество
-
-**Методы**:
-
-- `add(product: Product): void` – добавляет товар в корзину
-- `remove(product: Product): void` – удаляет товар из корзины
-- `getTotal(): number` – вычисляет общую стоимость корзины
-- `getItemsCount(): number` – возвращает количество товаров в корзине
-- `clear(): void` – очищает корзину
-- `getItemsMap(): Map<string, number>` – возвращает карту товаров
-- `getItemsArray(): Product[]` – возвращает массив товаров
-
----
-
-#### **CatalogModel**
-
-**Назначение**: Управление каталогом товаров
-
-**Поля**:
-
-- `items: Product[]` — список товаров
-
-**Методы**:
-
-- `setItems(items: Product[]): void` – устанавливает список товаров
-- `getItemById(id: string): Product` – возвращает товар по ID
-- `getItems(): Product[]` – возвращает все товары
-
----
-
-#### **AppStateModel**
-
-**Назначение**: Центральное состояние приложения
-
-**Поля**:
-
-- `basket: BasketModel` — корзина
-- `catalog: CatalogModel` — каталог
-- `events: EventEmitter` — шина событий
-- `orderDetails: OrderDetails` — данные заказа
-
-**Методы**:
-
-- `getOrderRequestBody(): OrderRequestBody` – формирует данные для заказа
-- `getBasket(): BasketModel` – возвращает модель корзины
-- `getCatalog(): CatalogModel` – возвращает модель каталога
-- `getEvents(): EventEmitter` – возвращает шину событий
-- `setOrderDetails(details: OrderFormDetails | ContactsFormDetails): void` – обновляет данные заказа
-
-### **Классы отображения**
-
-#### **BasketView**
-
-**Назначение**: Отображение корзины покупок
-
-**Методы**:
-
-- `render(args: { productsMap: Map<string, number>, productsArray: Product[], total: number }): void` – отрисовывает корзину
-
-**События**:
-
-- `onStartOrder: (e: Event) => void` – начало оформления заказа
-- `onBasketItemRemove: (product: Product) => void` – удаление товара из корзины
-- `onBasketOpen: () => void` – открытие корзины
-
----
-
-#### **OrderForm**
-
-**Назначение**: Форма оформления заказа (адрес и способ оплаты)
-
-**Методы**:
-
-- `render(details: OrderFormDetails): void` – отрисовывает форму
-
-**События**:
-
-- `onSubmit: (details: OrderFormDetails) => void` – отправка формы
-- `onOrderDetailsChange: (details: OrderFormDetails) => void` – изменение данных формы
-
----
-
-#### **ContactsForm**
-
-**Назначение**: Форма контактных данных
-
-**Методы**:
-
-- `render(details: ContactsFormDetails): void` – отрисовывает форму
-
-**События**:
-
-- `onSubmit: (details: ContactsFormDetails) => void` – отправка формы
-- `onOrderDetailsChange: (details: ContactsFormDetails) => void` – изменение данных формы
-
----
-
-#### **GalleryView**
-
-**Назначение**: Отображение каталога товаров
-
-**Методы**:
-
-- `render(items: Product[]): void` – отрисовывает галерею товаров
-
-**События**:
-
-- `onCardClick: (product: Product) => void` – клик по карточке товара
-
----
-
-#### **HeaderView**
-
-**Назначение**: Отображение шапки приложения
-
-**Методы**:
-
-- `render(totalItemsCount: number): void` – отрисовывает шапку с количеством товаров
-
----
-
-#### **OrderConfirmationView**
-
-**Назначение**: Подтверждение заказа
-
-**Методы**:
-
-- `render(totalPrice: number): void` – отрисовывает подтверждение заказа
-
-**События**:
-
-- `onCloseButtonClick: () => void` – закрытие окна подтверждения
-
----
-
-#### **CardDetails**
-
-**Назначение**: Детальная информация о товаре
-
-**Методы**:
-
-- `render(product: Product): void` – отрисовывает детали товара
-
-**События**:
-
-- `onBasketAdd: (e: Event) => void` – добавление товара в корзину
-
-## **События приложения (events.ts)**
-
-(src/types/index.ts)
-
-### **Открытие товара**
-
-**details:open** - открытие детальной карточки товара
+- **contacts:submit** - отправка формы контактов
 
 ```typescript
 {
-	product: Product; // данные товара
-}
-```
-
-### **Корзина**
-
-**basket:add** - добавление товара в корзину
-
-```typescript
-{
-	product: Product; // добавляемый товар
-}
-```
-
-**basket:remove** - удаление товара из корзины
-
-```typescript
-{
-	product: Product; // удаляемый товар
-}
-```
-
-**basket:change** - изменение состояния корзины (без данных)
-
-**basket:open** - открытие модального окна корзины (без данных)
-
-### **Оформление заказа**
-
-**order:open** - открытие формы заказа (без данных)
-
-**order:change** - изменение данных в форме заказа
-
-```typescript
-{
-	details: OrderFormDetails; // адрес и способ оплаты
-}
-```
-
-**order:submit** - отправка формы заказа
-
-```typescript
-{
-	details: OrderFormDetails; // данные формы
-}
-```
-
-### **Контактные данные**
-
-**contacts:open** - открытие формы контактов (без данных)
-
-**contacts:change** - изменение данных в форме контактов
-
-```typescript
-{
-	details: ContactsFormDetails; // email и телефон
-}
-```
-
-**contacts:submit** - отправка формы контактов
-
-```typescript
-{
-	details: ContactsFormDetails; // данные формы
+	details: ContactsFormDetails;
 }
 ```
