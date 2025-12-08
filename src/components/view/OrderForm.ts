@@ -3,9 +3,10 @@ import {
 	OrderFormDetails,
 	OrderForm as TOrderForm,
 } from '../../types/index';
+import { BaseViewElement } from '../base/BaseViewElement';
 
-export class OrderForm implements TOrderForm {
-	private formEl: HTMLFormElement;
+export class OrderForm extends BaseViewElement implements TOrderForm {
+	protected baseElement: HTMLFormElement;
 	private addressInput: HTMLInputElement;
 	private cardButton: HTMLButtonElement;
 	private cashButton: HTMLButtonElement;
@@ -14,6 +15,7 @@ export class OrderForm implements TOrderForm {
 	private details: OrderFormDetails;
 
 	constructor({ onSubmit, onOrderDetailsChange }: OrderFormConstructor) {
+		super();
 		const formTemplate = document.querySelector(
 			'#order'
 		) as HTMLTemplateElement | null;
@@ -82,17 +84,13 @@ export class OrderForm implements TOrderForm {
 			onSubmit(this.details);
 		});
 
-		this.formEl = formEl;
+		this.baseElement = formEl;
 		this.cardButton = cardButton;
 		this.cashButton = cashButton;
 		this.errorSpan = errorSpan;
 		this.addressInput = addressInput;
 		this.submitButton = submitButton;
 		this.details = { address: '', paymentVariant: 'Онлайн' };
-	}
-
-	public getElement() {
-		return this.formEl;
 	}
 
 	public setError(message: string) {

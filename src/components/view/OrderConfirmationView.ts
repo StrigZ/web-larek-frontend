@@ -2,12 +2,17 @@ import {
 	OrderConfirmationViewConstructor,
 	OrderConfirmationView as TOrderConfirmationView,
 } from '../../types';
+import { BaseViewElement } from '../base/BaseViewElement';
 
-export class OrderConfirmationView implements TOrderConfirmationView {
-	private successEl: Element;
+export class OrderConfirmationView
+	extends BaseViewElement
+	implements TOrderConfirmationView
+{
+	protected baseElement: Element;
 	private totalPriceEl: Element;
 
 	constructor({ onCloseButtonClick }: OrderConfirmationViewConstructor) {
+		super();
 		const template = document.querySelector(
 			'#success'
 		) as HTMLTemplateElement | null;
@@ -31,15 +36,11 @@ export class OrderConfirmationView implements TOrderConfirmationView {
 
 		closeButton.addEventListener('click', onCloseButtonClick);
 
-		this.successEl = successEl;
+		this.baseElement = successEl;
 		this.totalPriceEl = totalPriceEl;
 	}
 
-	getElement() {
-		return this.successEl;
-	}
-
-	render(totalPrice: number | string) {
+	public render(totalPrice: number) {
 		this.totalPriceEl.textContent = `Списано ${totalPrice.toString()} синапсов`;
 	}
 }

@@ -4,13 +4,15 @@ import {
 	GalleryView as TGalleryView,
 } from '../../types';
 import { CDN_URL } from '../../utils/constants';
+import { BaseViewElement } from '../base/BaseViewElement';
 
-export class GalleryView implements TGalleryView {
-	private galleryEl: Element;
+export class GalleryView extends BaseViewElement implements TGalleryView {
+	protected baseElement: Element;
 	private cardTemplateEl: HTMLTemplateElement;
 	private onCardClick: (product: Product) => void;
 
 	constructor({ onCardClick }: GalleryViewConstructor) {
+		super();
 		const galleryEl = document.querySelector('.gallery');
 		if (!galleryEl) {
 			throw new Error('GalleryView: Gallery element was not found!');
@@ -25,13 +27,13 @@ export class GalleryView implements TGalleryView {
 
 		this.onCardClick = onCardClick;
 
-		this.galleryEl = galleryEl;
+		this.baseElement = galleryEl;
 		this.cardTemplateEl = cardTemplateEl;
 	}
 
 	public render(items: Product[]) {
 		items.forEach((data) =>
-			this.galleryEl.append(this._createProductCard(data))
+			this.baseElement.append(this._createProductCard(data))
 		);
 	}
 

@@ -3,12 +3,13 @@ import {
 	Product,
 	BasketView as TBasketView,
 } from '../../types';
+import { BaseViewElement } from '../base/BaseViewElement';
 
-export class BasketView implements TBasketView {
+export class BasketView extends BaseViewElement implements TBasketView {
 	private cardTemplateEl: HTMLTemplateElement;
 	private itemListEl: Element;
 	private totalPriceEl: Element;
-	private basketEl: Element;
+	protected baseElement: Element;
 	private onBasketItemRemove: (product: Product) => void;
 
 	constructor({
@@ -16,6 +17,7 @@ export class BasketView implements TBasketView {
 		onBasketItemRemove,
 		onBasketOpen,
 	}: BasketViewConstructor) {
+		super();
 		const basketTemplate = document.querySelector(
 			'#basket'
 		) as HTMLTemplateElement | null;
@@ -65,15 +67,11 @@ export class BasketView implements TBasketView {
 		goToOrderButton.addEventListener('click', onStartOrder);
 		openBasketButton.addEventListener('click', onBasketOpen);
 
-		this.basketEl = basketEl;
+		this.baseElement = basketEl;
 		this.cardTemplateEl = cardTemplateEl;
 		this.itemListEl = itemListEl;
 		this.totalPriceEl = totalPriceEl;
 		this.onBasketItemRemove = onBasketItemRemove;
-	}
-
-	public getElement() {
-		return this.basketEl;
 	}
 
 	public render({

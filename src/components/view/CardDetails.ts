@@ -4,9 +4,10 @@ import {
 	CardDetailsConstructor,
 } from '../../types';
 import { CDN_URL } from '../../utils/constants';
+import { BaseViewElement } from '../base/BaseViewElement';
 
-export class CardDetails implements TCardDetails {
-	private cardDetailsEl: Element;
+export class CardDetails extends BaseViewElement implements TCardDetails {
+	protected baseElement: Element;
 	private titleEl: Element;
 	private categoryEl: Element;
 	private imageEl: HTMLImageElement;
@@ -14,6 +15,7 @@ export class CardDetails implements TCardDetails {
 	private descriptionEl: Element;
 
 	constructor({ onBasketAdd }: CardDetailsConstructor) {
+		super();
 		const cardDetailsTemplate = document.querySelector(
 			'#card-preview'
 		) as HTMLTemplateElement | null;
@@ -62,11 +64,7 @@ export class CardDetails implements TCardDetails {
 		this.imageEl = imageEl;
 		this.priceEl = priceEl;
 		this.descriptionEl = descriptionEl;
-		this.cardDetailsEl = cardDetailsEl;
-	}
-
-	public getElement() {
-		return this.cardDetailsEl;
+		this.baseElement = cardDetailsEl;
 	}
 
 	public render({ category, description, image, price, title }: Product) {

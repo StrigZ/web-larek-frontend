@@ -3,9 +3,10 @@ import {
 	ContactsFormDetails,
 	ContactsForm as TContactsForm,
 } from '../../types/index';
+import { BaseViewElement } from '../base/BaseViewElement';
 
-export class ContactsForm implements TContactsForm {
-	private formEl: HTMLFormElement;
+export class ContactsForm extends BaseViewElement implements TContactsForm {
+	protected baseElement: HTMLFormElement;
 	private emailInput: HTMLInputElement;
 	private phoneNumberInput: HTMLInputElement;
 	private errorSpan: Element;
@@ -13,6 +14,7 @@ export class ContactsForm implements TContactsForm {
 	private details: ContactsFormDetails;
 
 	constructor({ onSubmit, onOrderDetailsChange }: ContactsFormConstructor) {
+		super();
 		const formTemplate = document.querySelector(
 			'#contacts'
 		) as HTMLTemplateElement | null;
@@ -63,16 +65,12 @@ export class ContactsForm implements TContactsForm {
 			onSubmit(this.details);
 		});
 
-		this.formEl = formEl;
+		this.baseElement = formEl;
 		this.errorSpan = errorSpan;
 		this.emailInput = emailInput;
 		this.phoneNumberInput = phoneNumberInput;
 		this.submitButton = submitButton;
 		this.details = { email: '', phoneNumber: '' };
-	}
-
-	public getElement() {
-		return this.formEl;
 	}
 
 	public setError(message: string) {

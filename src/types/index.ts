@@ -50,7 +50,6 @@ export type CatalogModel = {
 };
 
 export type BasketView = {
-	getElement: () => void;
 	render: (args: {
 		productsMap: Map<string, number>;
 		productsArray: Product[];
@@ -65,7 +64,6 @@ export type BasketViewConstructor = {
 };
 
 export type CardDetails = {
-	getElement: () => void;
 	render: (product: Product) => void;
 };
 
@@ -121,9 +119,12 @@ export type BaseModalView = {
 	close: () => void;
 };
 
+export type BaseViewElement = {
+	render: (...args: unknown[]) => void;
+	getElement: () => Element;
+};
+
 export type OrderForm = {
-	getElement: () => void;
-	render: (details: OrderFormDetails) => void;
 	reset: () => void;
 };
 
@@ -133,7 +134,6 @@ export type OrderFormConstructor = {
 };
 
 export type OrderConfirmationView = {
-	getElement: () => void;
 	render: (totalPrice: number) => void;
 };
 
@@ -142,13 +142,11 @@ export type OrderConfirmationViewConstructor = {
 };
 
 export type HeaderView = {
-	getElement: () => void;
 	render: (totalItemsCount: number) => void;
 	reset: () => void;
 };
 
 export type ContactsForm = {
-	getElement: () => void;
 	render: (details: ContactsFormDetails) => void;
 	reset: () => void;
 };

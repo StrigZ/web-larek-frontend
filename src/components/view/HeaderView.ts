@@ -1,24 +1,23 @@
 import { HeaderView as THeaderView } from '../../types';
+import { BaseViewElement } from '../base/BaseViewElement';
 
-export class HeaderView implements THeaderView {
-	basketCounterEl: Element;
+export class HeaderView extends BaseViewElement implements THeaderView {
+	protected baseElement: Element;
 
 	constructor() {
+		super();
 		const basketCounterEl = document.querySelector('.header__basket-counter');
 		if (!basketCounterEl)
 			throw new Error('HeaderView: basketCounterEl was not found');
 
 		basketCounterEl.textContent = '0';
-		this.basketCounterEl = basketCounterEl;
+		this.baseElement = basketCounterEl;
 	}
 
 	public render(totalItemsCount: number) {
-		this.basketCounterEl.textContent = totalItemsCount.toString();
+		this.baseElement.textContent = totalItemsCount.toString();
 	}
 	public reset() {
-		this.basketCounterEl.textContent = '0';
-	}
-	public getElement() {
-		this.basketCounterEl;
+		this.baseElement.textContent = '0';
 	}
 }
