@@ -12,6 +12,7 @@ import type {
 	BasketAddEvent,
 	BasketRemoveEvent,
 	ContactsFormDetails,
+	OnConfirmPurchase,
 	OrderDetails,
 	PreviewOpenEvent,
 	ProductList,
@@ -37,7 +38,7 @@ const basketView = new BasketView({
 });
 
 const galleryView = new GalleryView({
-	onCardClick: onGalleryCardClick,
+	onCardClick: (id: string) => appState.events.emit('preview:open', { id }),
 });
 
 const orderForm = new OrderForm({
@@ -55,8 +56,12 @@ const orderConfirmationView = new OrderConfirmationView({
 
 appState.events.on('preview:open', onPreviewOpen);
 
-appState.events.on('basket:add', onBasketAdd);
-appState.events.on('basket:remove', onBasketRemove);
+appState.events.on<BasketAddEvent>('basket:add', ({ id }) =>
+	appState.basket.add(id)
+);
+appState.events.on<BasketRemoveEvent>('basket:remove', ({ id }) =>
+	appState.basket.remove(id)
+);
 appState.events.on('basket:change', onBasketChange);
 appState.events.on('basket:open', onBasketOpen);
 
@@ -67,22 +72,25 @@ appState.events.on('order:submit', () => {
 	baseModalView.open();
 });
 
-appState.events.on('contacts:submit', () => {
-	let total = 0;
-	let isPriceless = false;
-	const productsMap = appState.basket.items;
-	Array.from(productsMap).map(([productId, index]) => {
-		const product = appState.catalog.getItemById(productId);
-		if (!product.price) {
-			return (isPriceless = true);
-		}
-		total += product.price * index;
-	});
-	orderConfirmationView.render(isPriceless ? 'Бесценно' : total);
-	baseModalView.setContent(orderConfirmationView.getElement());
-	// make api request
-	// show final modal
-	appState.basket.clear();
+appState.events.on<OnConfirmPurchase>('contacts:submit', (event) => {
+	confirmPurchase(event)
+		.then(() => {
+			let total = 0;
+			let isPriceless = false;
+			const productsMap = appState.basket.items;
+			Array.from(productsMap).map(([productId, index]) => {
+				const product = appState.catalog.getItemById(productId);
+				if (!product.price) {
+					return (isPriceless = true);
+				}
+				total += product.price * index;
+			});
+			orderConfirmationView.render(isPriceless ? 'Бесценно' : total);
+			baseModalView.setContent(orderConfirmationView.getElement());
+
+			appState.basket.clear();
+		})
+		.catch((e) => console.log('Error ' + e));
 });
 
 function onOrderFormSubmit(details: Partial<OrderDetails>) {
@@ -94,9 +102,7 @@ function onOrderOpen() {
 	baseModalView.setContent(orderForm.getElement());
 	baseModalView.open();
 }
-function onGalleryCardClick(id: string) {
-	appState.events.emit('preview:open', { id });
-}
+
 function onBasketChange() {
 	const productMap = Array.from(appState.basket.items).map(
 		([productId, index]) => {
@@ -110,12 +116,7 @@ function onBasketOpen() {
 	baseModalView.setContent(basketView.getElement());
 	baseModalView.open();
 }
-function onBasketRemove({ id }: BasketRemoveEvent) {
-	appState.basket.remove(id);
-}
-function onBasketAdd({ id }: BasketAddEvent) {
-	appState.basket.add(id);
-}
+
 function onPreviewOpen({ id }: PreviewOpenEvent) {
 	const productData = appState.catalog.getItemById(id);
 	const preview = new CardDetails({
@@ -149,12 +150,17 @@ function onPaymentDetailsChange(details: Partial<OrderDetails>) {
 }
 function onContactsFormSubmit(details: Partial<ContactsFormDetails>) {
 	appState.setOrderDetails(details);
-	appState.events.emit('contacts:submit');
+	const requestBody = appState.getOrderRequestBody();
+
+	appState.events.emit<OnConfirmPurchase>('contacts:submit', { requestBody });
 }
 async function fetchProducts() {
 	return await apiClient.get<ProductList>('/product/');
 }
 
+async function confirmPurchase({ requestBody }: OnConfirmPurchase) {
+	return await apiClient.post<ProductList>('/order/', requestBody);
+}
 fetchProducts()
 	.then((products) => {
 		const { items } = products;

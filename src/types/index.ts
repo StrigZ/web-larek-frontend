@@ -116,3 +116,18 @@ export type ContactsForm = {
 	getElement: () => void;
 	reset: () => void;
 };
+
+export type OrderRequestBody = Omit<
+	OrderDetails,
+	'paymentVariant' | 'phoneNumber'
+> & {
+	phone: string;
+	payment: 'online' | 'cash';
+	total: number | 'Бесценно';
+} & {
+	items: Product['id'][];
+};
+
+export type OnConfirmPurchase = {
+	requestBody: OrderRequestBody;
+};

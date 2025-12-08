@@ -19,7 +19,6 @@ export class Basket implements BasketModel {
 		} else {
 			this.items.set(id, 1);
 		}
-
 		this._changed();
 	}
 
