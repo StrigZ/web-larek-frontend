@@ -29,7 +29,7 @@ import { HeaderView } from './components/view/HeaderView';
 
 const appState = new AppState(
 	new Basket({
-		onBasketChange: () => appState.events.emit('basket:change'),
+		onBasketChange: () => appState.getEvents().emit('basket:change'),
 	}),
 	new Catalog(),
 	new EventEmitter()
@@ -39,28 +39,33 @@ const baseModalView = new BaseModalView();
 
 const headerView = new HeaderView();
 const basketView = new BasketView({
-	onStartOrder: () => appState.events.emit('order:open'),
+	onStartOrder: () => appState.getEvents().emit('order:open'),
 	onBasketItemRemove: (product) =>
-		appState.events.emit<BasketRemoveEvent>('basket:remove', { product }),
-	onBasketOpen: () => appState.events.emit('basket:open'),
+		appState.getEvents().emit<BasketRemoveEvent>('basket:remove', { product }),
+	onBasketOpen: () => appState.getEvents().emit('basket:open'),
 });
 
 const galleryView = new GalleryView({
 	onCardClick: (product) =>
-		appState.events.emit<PreviewOpenEvent>('preview:open', { product }),
+		appState.getEvents().emit<PreviewOpenEvent>('preview:open', { product }),
 });
 
 const orderForm = new OrderForm({
 	onSubmit: (details) =>
-		appState.events.emit<OrderFormSubmitEvent>('order:submit', { details }),
+		appState
+			.getEvents()
+			.emit<OrderFormSubmitEvent>('order:submit', { details }),
 	onOrderDetailsChange: (details) =>
-		appState.events.emit<OrderFormChangeEvent>('order:change', { details }),
+		appState
+			.getEvents()
+			.emit<OrderFormChangeEvent>('order:change', { details }),
 });
 
 const contactsForm = new ContactsForm({
-	onSubmit: (details) => appState.events.emit('contacts:submit', { details }),
+	onSubmit: (details) =>
+		appState.getEvents().emit('contacts:submit', { details }),
 	onOrderDetailsChange: (details) =>
-		appState.events.emit<ContactsFormChangeEvent>('contacts:change', {
+		appState.getEvents().emit<ContactsFormChangeEvent>('contacts:change', {
 			details,
 		}),
 });
@@ -69,31 +74,33 @@ const orderConfirmationView = new OrderConfirmationView({
 	onCloseButtonClick: () => baseModalView.close(),
 });
 
-appState.events.on<PreviewOpenEvent>('preview:open', handlePreviewOpen);
+appState.getEvents().on<PreviewOpenEvent>('preview:open', handlePreviewOpen);
 
-appState.events.on('basket:change', handleBasketChange);
-appState.events.on<BasketAddEvent>('basket:add', handleBasketAdd);
-appState.events.on<BasketRemoveEvent>('basket:remove', handleBasketRemove);
-appState.events.on('basket:open', handleBasketOpen);
+appState.getEvents().on('basket:change', handleBasketChange);
+appState.getEvents().on<BasketAddEvent>('basket:add', handleBasketAdd);
+appState.getEvents().on<BasketRemoveEvent>('basket:remove', handleBasketRemove);
+appState.getEvents().on('basket:open', handleBasketOpen);
 
-appState.events.on('order:open', handleOrderFormOpen);
-appState.events.on<OrderFormChangeEvent>('order:change', handleOrderFormChange);
-appState.events.on<OrderFormSubmitEvent>('order:submit', handleOrderFormSubmit);
+appState.getEvents().on('order:open', handleOrderFormOpen);
+appState
+	.getEvents()
+	.on<OrderFormChangeEvent>('order:change', handleOrderFormChange);
+appState
+	.getEvents()
+	.on<OrderFormSubmitEvent>('order:submit', handleOrderFormSubmit);
 
-appState.events.on('contacts:open', handleContactsFormOpen);
-appState.events.on<ContactsFormChangeEvent>(
-	'contacts:change',
-	handleContactsFormChange
-);
-appState.events.on<ContactsFormSubmitEvent>(
-	'contacts:submit',
-	handleContactsFormSubmit
-);
+appState.getEvents().on('contacts:open', handleContactsFormOpen);
+appState
+	.getEvents()
+	.on<ContactsFormChangeEvent>('contacts:change', handleContactsFormChange);
+appState
+	.getEvents()
+	.on<ContactsFormSubmitEvent>('contacts:submit', handleContactsFormSubmit);
 
 function handlePreviewOpen({ product }: PreviewOpenEvent) {
-	const productData = appState.catalog.getItemById(product.id);
+	const productData = appState.getCatalog().getItemById(product.id);
 	const preview = new CardDetails({
-		onBasketAdd: () => appState.events.emit('basket:add', { product }),
+		onBasketAdd: () => appState.getEvents().emit('basket:add', { product }),
 	});
 	preview.render(productData);
 	baseModalView.setContent(preview.getElement());
@@ -101,17 +108,17 @@ function handlePreviewOpen({ product }: PreviewOpenEvent) {
 }
 function handleBasketChange() {
 	basketView.render({
-		productsArray: appState.basket.getItemsArray(),
-		total: appState.basket.getTotal(),
-		productsMap: appState.basket.getItemsMap(),
+		productsArray: appState.getBasket().getItemsArray(),
+		total: appState.getBasket().getTotal(),
+		productsMap: appState.getBasket().getItemsMap(),
 	});
-	headerView.render(appState.basket.getItemsCount());
+	headerView.render(appState.getBasket().getItemsCount());
 }
 function handleBasketAdd({ product }: BasketAddEvent) {
-	appState.basket.add(product);
+	appState.getBasket().add(product);
 }
 function handleBasketRemove({ product }: BasketRemoveEvent) {
-	appState.basket.remove(product);
+	appState.getBasket().remove(product);
 }
 function handleBasketOpen() {
 	baseModalView.setContent(basketView.getElement());
@@ -134,7 +141,7 @@ function handleOrderFormChange({ details }: OrderFormChangeEvent) {
 function handleOrderFormSubmit({ details }: OrderFormSubmitEvent) {
 	appState.setOrderDetails(details);
 
-	appState.events.emit('contacts:open');
+	appState.getEvents().emit('contacts:open');
 }
 function handleContactsFormOpen() {
 	contactsForm.reset();
@@ -160,11 +167,11 @@ function handleContactsFormSubmit({ details }: ContactsFormSubmitEvent) {
 
 	makePurchaseRequest(requestBody)
 		.then(() => {
-			appState.basket.getTotal();
-			orderConfirmationView.render(appState.basket.getTotal());
+			appState.getBasket().getTotal();
+			orderConfirmationView.render(appState.getBasket().getTotal());
 			baseModalView.setContent(orderConfirmationView.getElement());
 
-			appState.basket.clear();
+			appState.getBasket().clear();
 			headerView.reset();
 		})
 		.catch((e) => console.log('Error: ' + e));
@@ -180,7 +187,7 @@ async function makePurchaseRequest(requestBody: OrderRequestBody) {
 fetchProducts()
 	.then((products) => {
 		const { items } = products;
-		appState.catalog.setItems(items);
+		appState.getCatalog().setItems(items);
 		galleryView.populateGallery(items);
 	})
 	.catch((e) => console.error(e));

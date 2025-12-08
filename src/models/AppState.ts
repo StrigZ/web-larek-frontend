@@ -9,10 +9,10 @@ import {
 import { DEFAULT_ORDER_DETAILS } from '../utils/constants';
 
 export class AppState implements AppStateModel {
-	basket: BasketModel;
-	catalog: CatalogModel;
-	orderDetails: OrderDetails;
-	events: EventEmitter;
+	private catalog: CatalogModel;
+	private events: EventEmitter;
+	private basket: BasketModel;
+	private orderDetails: OrderDetails;
 
 	constructor(
 		basket: BasketModel,
@@ -25,6 +25,15 @@ export class AppState implements AppStateModel {
 		this.orderDetails = DEFAULT_ORDER_DETAILS;
 	}
 
+	public getBasket() {
+		return this.basket;
+	}
+	public getCatalog() {
+		return this.catalog;
+	}
+	public getEvents() {
+		return this.events;
+	}
 	public getOrderRequestBody(): OrderRequestBody {
 		const paymentVariant =
 			this.orderDetails.paymentVariant === 'Онлайн' ? 'online' : 'cash';

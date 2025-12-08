@@ -1,4 +1,5 @@
 import { EventEmitter } from '../components/base/events';
+import { Catalog } from '../models/Catalog';
 
 export type ProductList = {
 	total: number;
@@ -74,11 +75,11 @@ export type OrderDetails = {
 };
 
 export type AppStateModel = {
-	basket: BasketModel;
-	catalog: CatalogModel;
-	orderDetails: OrderDetails;
-	events: EventEmitter;
-	setOrderDetails: (details: Partial<OrderDetails>) => void;
+	getOrderRequestBody: () => OrderRequestBody;
+	setOrderDetails: (details: OrderFormDetails | ContactsFormDetails) => void;
+	getBasket: () => BasketModel;
+	getCatalog: () => Catalog;
+	getEvents: () => EventEmitter;
 };
 
 export type GalleryView = {
