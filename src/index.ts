@@ -21,12 +21,12 @@ import type {
 	PreviewOpenEvent,
 } from './types';
 import { OrderForm } from './components/view/OrderForm';
-import { BaseModalView } from './components/base/BaseModalView';
 import { GalleryView } from './components/view/GalleryView';
 import { CardDetails } from './components/view/CardDetails';
 import { ContactsForm } from './components/view/ContactsForm';
 import { OrderConfirmationView } from './components/view/OrderConfirmationView';
 import { HeaderView } from './components/view/HeaderView';
+import { ModalView } from './components/view/ModalView';
 
 const appState = new AppState(
 	new Basket({
@@ -36,7 +36,7 @@ const appState = new AppState(
 	new EventEmitter()
 );
 
-const baseModalView = new BaseModalView();
+const modalView = new ModalView();
 
 const headerView = new HeaderView();
 const basketView = new BasketView({
@@ -72,7 +72,7 @@ const contactsForm = new ContactsForm({
 });
 
 const orderConfirmationView = new OrderConfirmationView({
-	onCloseButtonClick: () => baseModalView.close(),
+	onCloseButtonClick: () => modalView.close(),
 });
 
 appState.getEvents().on<PreviewOpenEvent>('details:open', handlePreviewOpen);
@@ -104,8 +104,8 @@ function handlePreviewOpen({ product }: PreviewOpenEvent) {
 		onBasketAdd: () => appState.getEvents().emit('basket:add', { product }),
 	});
 	cardDetails.render(productData);
-	baseModalView.setContent(cardDetails.getElement());
-	baseModalView.open();
+	modalView.setContent(cardDetails.getElement());
+	modalView.open();
 }
 function handleBasketChange() {
 	basketView.render({
@@ -122,13 +122,13 @@ function handleBasketRemove({ product }: BasketRemoveEvent) {
 	appState.getBasket().remove(product);
 }
 function handleBasketOpen() {
-	baseModalView.setContent(basketView.getElement());
-	baseModalView.open();
+	modalView.setContent(basketView.getElement());
+	modalView.open();
 }
 function handleOrderFormOpen() {
 	orderForm.reset();
-	baseModalView.setContent(orderForm.getElement());
-	baseModalView.open();
+	modalView.setContent(orderForm.getElement());
+	modalView.open();
 }
 function handleOrderFormChange({ details }: OrderFormChangeEvent) {
 	orderForm.setSubmitButtonStatus(false);
@@ -145,8 +145,8 @@ function handleOrderFormSubmit({ details }: OrderFormSubmitEvent) {
 }
 function handleContactsFormOpen() {
 	contactsForm.reset();
-	baseModalView.setContent(contactsForm.getElement());
-	baseModalView.open();
+	modalView.setContent(contactsForm.getElement());
+	modalView.open();
 }
 function handleContactsFormChange({ details }: ContactsFormChangeEvent) {
 	contactsForm.setSubmitButtonStatus(false);
@@ -169,7 +169,7 @@ function handleContactsFormSubmit({ details }: ContactsFormSubmitEvent) {
 		.then(() => {
 			appState.getBasket().getTotal();
 			orderConfirmationView.render(appState.getBasket().getTotal());
-			baseModalView.setContent(orderConfirmationView.getElement());
+			modalView.setContent(orderConfirmationView.getElement());
 
 			appState.getBasket().clear();
 			headerView.reset();

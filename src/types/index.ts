@@ -74,7 +74,7 @@ export type AppStateModel = {
 export type OrderFormDetails = Pick<OrderDetails, 'paymentVariant' | 'address'>;
 export type ContactsFormDetails = Pick<OrderDetails, 'email' | 'phoneNumber'>;
 
-export type BaseModalView = {
+export type ModalView = {
 	setContent: (content: Element) => void;
 	open: () => void;
 	close: () => void;

@@ -1,16 +1,15 @@
-import { BaseModalView as TBaseModalView } from '../../types';
+import { ModalView as TModalView } from '../../types';
 
-export class BaseModalView implements TBaseModalView {
+export class ModalView implements TModalView {
 	private modalEl: Element;
 	private contentEl: Element;
 
 	constructor() {
 		const modalEl = document.querySelector('#modal-container');
-		if (!modalEl) throw new Error('BaseModalView: modal was not found!');
+		if (!modalEl) throw new Error('ModalView: modal was not found!');
 
 		const contentEl = modalEl.querySelector('.modal__content');
-		if (!contentEl)
-			throw new Error('BaseModalView: modal content was not found!');
+		if (!contentEl) throw new Error('ModalView: modal content was not found!');
 
 		this.modalEl = modalEl;
 		this.contentEl = contentEl;
