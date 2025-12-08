@@ -1,5 +1,10 @@
 import { ModalView as TModalView } from '../../types';
 
+/**
+ * Класс управления модальным окном.
+ * Управляет открытием, закрытием и содержимым модального окна.
+ * @implements TModalView
+ */
 export class ModalView implements TModalView {
 	private modalEl: Element;
 	private contentEl: Element;
@@ -16,19 +21,34 @@ export class ModalView implements TModalView {
 		this._attachListeners();
 	}
 
+	/**
+	 * Устанавливает содержимое модального окна.
+	 * @param content - DOM-элемент для отображения в модальном окне.
+	 */
 	setContent(content: Element) {
 		this.contentEl.replaceChildren(content);
 	}
 
+	/**
+	 * Открывает модальное окно.
+	 */
 	open() {
 		this.modalEl.classList.add('modal_active');
 		document.body.style.overflow = 'hidden';
 	}
+
+	/**
+	 * Закрывает модальное окно.
+	 */
 	close() {
 		this.modalEl.classList.remove('modal_active');
 		document.body.style.overflow = '';
 	}
 
+	/**
+	 * Прикрепляет обработчики событий для модального окна.
+	 * @private
+	 */
 	private _attachListeners() {
 		this.modalEl.addEventListener('click', () => this.close());
 		this.contentEl.addEventListener('click', (e) => e.stopPropagation());

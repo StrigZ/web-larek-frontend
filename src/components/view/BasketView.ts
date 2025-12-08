@@ -5,20 +5,33 @@ import {
 } from '../../types';
 import { BaseElementView } from '../base/BaseElementView';
 
+/**
+ * Класс отображения корзины покупок.
+ * Отображает список товаров в корзине, общую стоимость и кнопку оформления заказа.
+ * @extends BaseElementView
+ * @implements TBasketView
+ */
 export class BasketView extends BaseElementView implements TBasketView {
-	protected baseElement: Element;
+	protected baseElement;
 	private cardTemplateEl: HTMLTemplateElement;
 	private itemListEl: Element;
 	private totalPriceEl: Element;
 	private goToOrderButton: HTMLButtonElement;
 	private onBasketItemRemove: (product: Product) => void;
 
+	/**
+	 * Создает экземпляр BasketView.
+	 * @param onStartOrder - Обработчик начала оформления заказа.
+	 * @param onBasketItemRemove - Обработчик удаления товара из корзины.
+	 * @param onBasketOpen - Обработчик открытия корзины.
+	 */
 	constructor({
 		onStartOrder,
 		onBasketItemRemove,
 		onBasketOpen,
 	}: BasketViewConstructor) {
 		super();
+		// Инициализация DOM-элементов
 		const basketTemplate = document.querySelector(
 			'#basket'
 		) as HTMLTemplateElement | null;
@@ -48,6 +61,7 @@ export class BasketView extends BaseElementView implements TBasketView {
 			'.modal__actions .button'
 		) as HTMLButtonElement | null;
 
+		// Валидация DOM-элементов
 		if (!goToOrderButton)
 			throw new Error('initBasketView: goToOrderButton was not found!');
 		if (!openBasketButton)
@@ -63,12 +77,16 @@ export class BasketView extends BaseElementView implements TBasketView {
 				'initBasketView: Basket item list element was not found!'
 			);
 
+		// Начальное состояние
 		itemListEl.innerHTML = 'Корзина пуста!';
 		totalPriceEl.textContent = '0 синапсов';
 		goToOrderButton.disabled = true;
+
+		// Подписка на события
 		goToOrderButton.addEventListener('click', onStartOrder);
 		openBasketButton.addEventListener('click', onBasketOpen);
 
+		// Сохранение ссылок на элементы
 		this.baseElement = basketEl;
 		this.cardTemplateEl = cardTemplateEl;
 		this.itemListEl = itemListEl;
@@ -77,6 +95,12 @@ export class BasketView extends BaseElementView implements TBasketView {
 		this.onBasketItemRemove = onBasketItemRemove;
 	}
 
+	/**
+	 * Отображает корзину с товарами.
+	 * @param productsMap - Карта товаров и их количества.
+	 * @param productsArray - Массив товаров в корзине.
+	 * @param total - Общая стоимость корзины.
+	 */
 	public render({
 		productsArray,
 		productsMap,
@@ -88,7 +112,9 @@ export class BasketView extends BaseElementView implements TBasketView {
 	}) {
 		this.itemListEl.innerHTML = '';
 		const uniqueItemsArray = Array.from(new Set(productsArray));
+
 		if (total > 0) {
+			// Отображение товаров в корзине
 			uniqueItemsArray.forEach((product) => {
 				const index = productsMap.get(product.id);
 				if (!index) return;
@@ -101,12 +127,20 @@ export class BasketView extends BaseElementView implements TBasketView {
 			this.totalPriceEl.textContent = `${total.toString()} синапсов`;
 			this.goToOrderButton.disabled = false;
 		} else {
+			// Отображение пустой корзины
 			this.totalPriceEl.textContent = '0 синапсов';
 			this.itemListEl.textContent = 'Корзина пуста!';
 			this.goToOrderButton.disabled = true;
 		}
 	}
 
+	/**
+	 * Создает DOM-элемент товара в корзине.
+	 * @private
+	 * @param data - Данные товара.
+	 * @param index - Индекс/количество товара.
+	 * @returns DOM-элемент товара.
+	 */
 	private _createBasketItem(data: Product, index: string) {
 		const { price, title } = data;
 		const card = this.cardTemplateEl.content.cloneNode(
@@ -115,16 +149,22 @@ export class BasketView extends BaseElementView implements TBasketView {
 		const titleEl = card.querySelector('.card__title');
 		const priceEl = card.querySelector('.card__price');
 		const indexEl = card.querySelector('.basket__item-index');
-		const deleteButton = card.querySelector('.basket__item-delete  ');
+		const deleteButton = card.querySelector('.basket__item-delete');
+
 		if (!indexEl || !priceEl || !titleEl || !deleteButton) {
 			throw new Error('Required card elements not found');
 		}
+
 		const cardElement = card.querySelector('.card') as HTMLElement;
 
+		// Заполнение данными
 		titleEl.textContent = title;
 		priceEl.textContent = price ? `${price.toString()} синапсов` : 'Бесценно';
 		indexEl.textContent = index;
+
+		// Обработчик удаления товара
 		deleteButton.addEventListener('click', () => this.onBasketItemRemove(data));
+
 		return cardElement;
 	}
 }

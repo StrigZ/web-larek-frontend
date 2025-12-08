@@ -4,13 +4,23 @@ import {
 } from '../../types';
 import { BaseElementView } from '../base/BaseElementView';
 
+/**
+ * Класс отображения подтверждения заказа.
+ * Отображает успешное оформление заказа с итоговой суммой.
+ * @extends BaseElementView
+ * @implements TOrderConfirmationView
+ */
 export class OrderConfirmationView
 	extends BaseElementView
 	implements TOrderConfirmationView
 {
-	protected baseElement: Element;
+	protected baseElement;
 	private totalPriceEl: Element;
 
+	/**
+	 * Создает экземпляр OrderConfirmationView.
+	 * @param onCloseButtonClick - Обработчик закрытия окна подтверждения.
+	 */
 	constructor({ onCloseButtonClick }: OrderConfirmationViewConstructor) {
 		super();
 		const template = document.querySelector(
@@ -40,6 +50,10 @@ export class OrderConfirmationView
 		this.totalPriceEl = totalPriceEl;
 	}
 
+	/**
+	 * Отображает подтверждение заказа с итоговой суммой.
+	 * @param totalPrice - Итоговая сумма заказа.
+	 */
 	public render(totalPrice: number) {
 		this.totalPriceEl.textContent = `Списано ${totalPrice.toString()} синапсов`;
 	}

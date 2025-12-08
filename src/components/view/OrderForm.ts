@@ -5,15 +5,26 @@ import {
 } from '../../types/index';
 import { BaseFormView } from '../base/BaseFormView';
 
+/**
+ * Класс формы оформления заказа.
+ * Обрабатывает ввод адреса и выбор способа оплаты.
+ * @extends BaseFormView
+ * @implements TOrderForm
+ */
 export class OrderForm extends BaseFormView implements TOrderForm {
-	protected baseElement;
-	protected errorContainer;
-	protected submitButton;
+	protected baseElement: HTMLFormElement;
+	protected errorContainer: Element;
+	protected submitButton: HTMLButtonElement;
 	private addressInput: HTMLInputElement;
 	private cardButton: HTMLButtonElement;
 	private cashButton: HTMLButtonElement;
 	private details: OrderFormDetails;
 
+	/**
+	 * Создает экземпляр OrderForm.
+	 * @param onSubmit - Обработчик отправки формы.
+	 * @param onOrderDetailsChange - Обработчик изменения данных формы.
+	 */
 	constructor({ onSubmit, onOrderDetailsChange }: OrderFormConstructor) {
 		super();
 		const formTemplate = document.querySelector(
@@ -93,12 +104,20 @@ export class OrderForm extends BaseFormView implements TOrderForm {
 		this.details = { address: '', paymentVariant: 'Онлайн' };
 	}
 
+	/**
+	 * Отображает форму с переданными данными.
+	 * @param details - Данные заказа для заполнения формы.
+	 */
 	public render(details: OrderFormDetails) {
 		this.addressInput.value = details.address;
 		details.paymentVariant === 'Онлайн'
 			? this._activatePaymentMethodButton('card')
 			: this._activatePaymentMethodButton('cash');
 	}
+
+	/**
+	 * Сбрасывает форму к исходному состоянию.
+	 */
 	public reset() {
 		this.addressInput.value = '';
 		this.submitButton.disabled = true;
@@ -106,6 +125,11 @@ export class OrderForm extends BaseFormView implements TOrderForm {
 		this._activatePaymentMethodButton('card');
 	}
 
+	/**
+	 * Активирует кнопку выбранного способа оплаты.
+	 * @private
+	 * @param name - Название способа оплаты ('cash' или 'card').
+	 */
 	private _activatePaymentMethodButton(name: 'cash' | 'card') {
 		if (!this.cardButton || !this.cashButton) return;
 

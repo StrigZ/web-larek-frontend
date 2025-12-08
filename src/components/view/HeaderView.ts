@@ -1,8 +1,14 @@
 import { HeaderView as THeaderView } from '../../types';
 import { BaseElementView } from '../base/BaseElementView';
 
+/**
+ * Класс отображения шапки приложения.
+ * Отображает счетчик товаров в корзине в шапке сайта.
+ * @extends BaseElementView
+ * @implements THeaderView
+ */
 export class HeaderView extends BaseElementView implements THeaderView {
-	protected baseElement: Element;
+	protected baseElement;
 
 	constructor() {
 		super();
@@ -14,9 +20,17 @@ export class HeaderView extends BaseElementView implements THeaderView {
 		this.baseElement = basketCounterEl;
 	}
 
+	/**
+	 * Обновляет счетчик товаров в корзине.
+	 * @param totalItemsCount - Общее количество товаров в корзине.
+	 */
 	public render(totalItemsCount: number) {
 		this.baseElement.textContent = totalItemsCount.toString();
 	}
+
+	/**
+	 * Сбрасывает счетчик корзины.
+	 */
 	public reset() {
 		this.baseElement.textContent = '0';
 	}

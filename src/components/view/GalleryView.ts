@@ -6,11 +6,21 @@ import {
 import { CDN_URL } from '../../utils/constants';
 import { BaseElementView } from '../base/BaseElementView';
 
+/**
+ * Класс отображения галереи товаров.
+ * Отображает каталог товаров в виде сетки карточек.
+ * @extends BaseElementView
+ * @implements TGalleryView
+ */
 export class GalleryView extends BaseElementView implements TGalleryView {
-	protected baseElement: Element;
+	protected baseElement;
 	private cardTemplateEl: HTMLTemplateElement;
 	private onCardClick: (product: Product) => void;
 
+	/**
+	 * Создает экземпляр GalleryView.
+	 * @param onCardClick - Обработчик клика по карточке товара.
+	 */
 	constructor({ onCardClick }: GalleryViewConstructor) {
 		super();
 		const galleryEl = document.querySelector('.gallery');
@@ -31,12 +41,22 @@ export class GalleryView extends BaseElementView implements TGalleryView {
 		this.cardTemplateEl = cardTemplateEl;
 	}
 
+	/**
+	 * Отображает список товаров в галерее.
+	 * @param items - Массив товаров для отображения.
+	 */
 	public render(items: Product[]) {
 		items.forEach((data) =>
 			this.baseElement.append(this._createProductCard(data))
 		);
 	}
 
+	/**
+	 * Создает DOM-элемент карточки товара.
+	 * @private
+	 * @param product - Данные товара.
+	 * @returns DOM-элемент карточки товара.
+	 */
 	private _createProductCard(product: Product) {
 		const { category, image, price, title } = product;
 		const card = this.cardTemplateEl.content.cloneNode(
