@@ -1,8 +1,4 @@
-import {
-	OrderDetails,
-	OrderFormDetails,
-	OrderForm as TOrderForm,
-} from '../../types/index';
+import { OrderFormDetails, OrderForm as TOrderForm } from '../../types/index';
 
 export class OrderForm implements TOrderForm {
 	private formEl: HTMLFormElement;
@@ -11,13 +7,13 @@ export class OrderForm implements TOrderForm {
 	private cashButton: HTMLButtonElement;
 	private errorSpan: Element;
 	private submitButton: HTMLButtonElement;
-	private details: Partial<OrderDetails>;
+	private details: OrderFormDetails;
 	constructor({
 		onSubmit,
-		onPaymentDetailsChange,
+		onOrderDetailsChange,
 	}: {
-		onSubmit: (details: Partial<OrderDetails>) => void;
-		onPaymentDetailsChange: (details: Partial<OrderDetails>) => void;
+		onSubmit: (details: OrderFormDetails) => void;
+		onOrderDetailsChange: (details: OrderFormDetails) => void;
 	}) {
 		const formTemplate = document.querySelector(
 			'#order'
@@ -68,19 +64,19 @@ export class OrderForm implements TOrderForm {
 		cardButton.addEventListener('click', () => {
 			this._activatePaymentMethodButton('card');
 			this.details = { ...this.details, paymentVariant: 'Онлайн' };
-			onPaymentDetailsChange(this.details);
+			onOrderDetailsChange(this.details);
 		});
 		cashButton.addEventListener('click', () => {
 			this._activatePaymentMethodButton('cash');
 			this.details = { ...this.details, paymentVariant: 'При получении' };
-			onPaymentDetailsChange(this.details);
+			onOrderDetailsChange(this.details);
 		});
 		addressInput.addEventListener('change', (e) => {
 			const target = e.target as HTMLInputElement | null;
 			if (!target) return;
 
 			this.details = { ...this.details, address: target.value };
-			onPaymentDetailsChange(this.details);
+			onOrderDetailsChange(this.details);
 		});
 		formEl.addEventListener('submit', (e) => {
 			e.preventDefault();
@@ -93,12 +89,10 @@ export class OrderForm implements TOrderForm {
 		this.errorSpan = errorSpan;
 		this.addressInput = addressInput;
 		this.submitButton = submitButton;
-		this.details = {};
+		this.details = { address: '', paymentVariant: 'Онлайн' };
 	}
 
-	public render(
-		details: OrderFormDetails = { address: '', paymentVariant: 'Онлайн' }
-	) {
+	public render(details: OrderFormDetails) {
 		this.addressInput.value = details.address;
 		details.paymentVariant === 'Онлайн'
 			? this._activatePaymentMethodButton('card')
@@ -117,7 +111,7 @@ export class OrderForm implements TOrderForm {
 	public reset() {
 		this.addressInput.value = '';
 		this.submitButton.disabled = true;
-		this.details = {};
+		this.details = { address: '', paymentVariant: 'Онлайн' };
 		this._activatePaymentMethodButton('card');
 	}
 

@@ -65,6 +65,7 @@ export class Basket implements BasketModel {
 	}
 	public clear() {
 		this.items = new Map<string, number>();
+		this.itemsArray = [];
 		this._changed();
 	}
 	private _changed() {

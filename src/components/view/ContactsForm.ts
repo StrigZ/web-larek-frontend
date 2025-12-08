@@ -9,13 +9,13 @@ export class ContactsForm implements TContactsForm {
 	private phoneNumberInput: HTMLInputElement;
 	private errorSpan: Element;
 	private submitButton: HTMLButtonElement;
-	private details: Partial<ContactsFormDetails>;
+	private details: ContactsFormDetails;
 	constructor({
 		onSubmit,
-		onPaymentDetailsChange,
+		onOrderDetailsChange,
 	}: {
-		onSubmit: (details: Partial<ContactsFormDetails>) => void;
-		onPaymentDetailsChange: (details: Partial<ContactsFormDetails>) => void;
+		onSubmit: (details: ContactsFormDetails) => void;
+		onOrderDetailsChange: (details: ContactsFormDetails) => void;
 	}) {
 		const formTemplate = document.querySelector(
 			'#contacts'
@@ -56,11 +56,11 @@ export class ContactsForm implements TContactsForm {
 
 		emailInput.addEventListener('change', () => {
 			this.details = { ...this.details, email: emailInput.value };
-			onPaymentDetailsChange(this.details);
+			onOrderDetailsChange(this.details);
 		});
 		phoneNumberInput.addEventListener('change', () => {
 			this.details = { ...this.details, phoneNumber: phoneNumberInput.value };
-			onPaymentDetailsChange(this.details);
+			onOrderDetailsChange(this.details);
 		});
 		formEl.addEventListener('submit', (e) => {
 			e.preventDefault();
@@ -72,10 +72,10 @@ export class ContactsForm implements TContactsForm {
 		this.emailInput = emailInput;
 		this.phoneNumberInput = phoneNumberInput;
 		this.submitButton = submitButton;
-		this.details = {};
+		this.details = { email: '', phoneNumber: '' };
 	}
 
-	public render(details: ContactsFormDetails = { email: '', phoneNumber: '' }) {
+	public render(details: ContactsFormDetails) {
 		this.emailInput.value = details.email;
 		this.phoneNumberInput.value = details.phoneNumber;
 	}
@@ -93,6 +93,6 @@ export class ContactsForm implements TContactsForm {
 		this.phoneNumberInput.value = '';
 		this.emailInput.value = '';
 		this.submitButton.disabled = true;
-		this.details = {};
+		this.details = { email: '', phoneNumber: '' };
 	}
 }

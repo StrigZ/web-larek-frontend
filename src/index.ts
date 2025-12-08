@@ -11,9 +11,11 @@ import { Catalog } from './models/Catalog';
 import type {
 	BasketAddEvent,
 	BasketRemoveEvent,
-	ContactsFormDetails,
-	OnConfirmPurchase,
-	OrderDetails,
+	ContactsFormChangeEvent,
+	ContactsFormSubmitEvent,
+	OrderFormChangeEvent,
+	OrderFormSubmitEvent,
+	OrderRequestBody,
 	PreviewOpenEvent,
 	ProductList,
 } from './types';
@@ -21,7 +23,7 @@ import { OrderForm } from './components/view/OrderForm';
 import { BaseModalView } from './components/base/BaseModalView';
 import { GalleryView } from './components/view/GalleryView';
 import { CardDetails } from './components/view/CardDetails';
-import { ContactsForm } from './components/view/ContactForm';
+import { ContactsForm } from './components/view/ContactsForm';
 import { OrderConfirmationView } from './components/view/OrderConfirmationView';
 
 const appState = new AppState(
@@ -47,71 +49,46 @@ const galleryView = new GalleryView({
 });
 
 const orderForm = new OrderForm({
-	onSubmit: onOrderFormSubmit,
-	onPaymentDetailsChange: onPaymentDetailsChange,
+	onSubmit: (details) =>
+		appState.events.emit<OrderFormSubmitEvent>('order:submit', { details }),
+	onOrderDetailsChange: (details) =>
+		appState.events.emit<OrderFormChangeEvent>('order:change', { details }),
 });
-const contactsFrom = new ContactsForm({
-	onSubmit: onContactsFormSubmit,
-	onPaymentDetailsChange: onContactsChange,
+
+const contactsForm = new ContactsForm({
+	onSubmit: (details) => appState.events.emit('contacts:submit', { details }),
+	onOrderDetailsChange: (details) =>
+		appState.events.emit<ContactsFormChangeEvent>('contacts:change', {
+			details,
+		}),
 });
 
 const orderConfirmationView = new OrderConfirmationView({
 	onCloseButtonClick: () => baseModalView.close(),
 });
 
-appState.events.on<PreviewOpenEvent>('preview:open', onPreviewOpen);
-appState.events.on('basket:change', onBasketChange);
+appState.events.on<PreviewOpenEvent>('preview:open', handlePreviewOpen);
 
-appState.events.on<BasketAddEvent>('basket:add', ({ product }) =>
-	appState.basket.add(product)
+appState.events.on('basket:change', handleBasketChange);
+appState.events.on<BasketAddEvent>('basket:add', handleBasketAdd);
+appState.events.on<BasketRemoveEvent>('basket:remove', handleBasketRemove);
+appState.events.on('basket:open', handleBasketOpen);
+
+appState.events.on('order:open', handleOrderFormOpen);
+appState.events.on<OrderFormChangeEvent>('order:change', handleOrderFormChange);
+appState.events.on<OrderFormSubmitEvent>('order:submit', handleOrderFormSubmit);
+
+appState.events.on('contacts:open', handleContactsFormOpen);
+appState.events.on<ContactsFormChangeEvent>(
+	'contacts:change',
+	handleContactsFormChange
 );
-appState.events.on<BasketRemoveEvent>('basket:remove', ({ product }) =>
-	appState.basket.remove(product)
+appState.events.on<ContactsFormSubmitEvent>(
+	'contacts:submit',
+	handleContactsFormSubmit
 );
-appState.events.on('basket:open', onBasketOpen);
 
-appState.events.on('order:open', onOrderOpen);
-appState.events.on('order:submit', () => {
-	contactsFrom.reset();
-	baseModalView.setContent(contactsFrom.getElement());
-	baseModalView.open();
-});
-
-appState.events.on<OnConfirmPurchase>('contacts:submit', (event) => {
-	confirmPurchase(event)
-		.then(() => {
-			appState.basket.getTotal();
-			orderConfirmationView.render(appState.basket.getTotal());
-			baseModalView.setContent(orderConfirmationView.getElement());
-
-			appState.basket.clear();
-		})
-		.catch((e) => console.log('Error ' + e));
-});
-
-function onOrderFormSubmit(details: Partial<OrderDetails>) {
-	appState.setOrderDetails(details);
-	appState.events.emit('order:submit');
-}
-function onOrderOpen() {
-	orderForm.reset();
-	baseModalView.setContent(orderForm.getElement());
-	baseModalView.open();
-}
-
-function onBasketChange() {
-	basketView.render({
-		productsArray: appState.basket.getItemsArray(),
-		total: appState.basket.getTotal(),
-		productsMap: appState.basket.getItemsMap(),
-	});
-}
-function onBasketOpen() {
-	baseModalView.setContent(basketView.getElement());
-	baseModalView.open();
-}
-
-function onPreviewOpen({ product }: PreviewOpenEvent) {
+function handlePreviewOpen({ product }: PreviewOpenEvent) {
 	const productData = appState.catalog.getItemById(product.id);
 	const preview = new CardDetails({
 		onBasketAdd: () => appState.events.emit('basket:add', { product }),
@@ -120,20 +97,29 @@ function onPreviewOpen({ product }: PreviewOpenEvent) {
 	baseModalView.setContent(preview.getElement());
 	baseModalView.open();
 }
-function onContactsChange(details: Partial<ContactsFormDetails>) {
-	contactsFrom.setSubmitButtonStatus(false);
-	if (!details.email) {
-		contactsFrom.setError('Email не может быть пустым!');
-		return;
-	}
-	if (!details.phoneNumber) {
-		contactsFrom.setError('Номер телефона не может быть пустым!');
-		return;
-	}
-	contactsFrom.setError('');
-	contactsFrom.setSubmitButtonStatus(true);
+function handleBasketChange() {
+	basketView.render({
+		productsArray: appState.basket.getItemsArray(),
+		total: appState.basket.getTotal(),
+		productsMap: appState.basket.getItemsMap(),
+	});
 }
-function onPaymentDetailsChange(details: Partial<OrderDetails>) {
+function handleBasketAdd({ product }: BasketAddEvent) {
+	appState.basket.add(product);
+}
+function handleBasketRemove({ product }: BasketRemoveEvent) {
+	appState.basket.remove(product);
+}
+function handleBasketOpen() {
+	baseModalView.setContent(basketView.getElement());
+	baseModalView.open();
+}
+function handleOrderFormOpen() {
+	orderForm.reset();
+	baseModalView.setContent(orderForm.getElement());
+	baseModalView.open();
+}
+function handleOrderFormChange({ details }: OrderFormChangeEvent) {
 	orderForm.setSubmitButtonStatus(false);
 	if (!details.address) {
 		orderForm.setError('Адрес не может быть пустым!');
@@ -142,19 +128,51 @@ function onPaymentDetailsChange(details: Partial<OrderDetails>) {
 	orderForm.setError('');
 	orderForm.setSubmitButtonStatus(true);
 }
-function onContactsFormSubmit(details: Partial<ContactsFormDetails>) {
+function handleOrderFormSubmit({ details }: OrderFormSubmitEvent) {
+	appState.setOrderDetails(details);
+
+	appState.events.emit('contacts:open');
+}
+function handleContactsFormOpen() {
+	contactsForm.reset();
+	baseModalView.setContent(contactsForm.getElement());
+	baseModalView.open();
+}
+function handleContactsFormChange({ details }: ContactsFormChangeEvent) {
+	contactsForm.setSubmitButtonStatus(false);
+	if (!details.email) {
+		contactsForm.setError('Email не может быть пустым!');
+		return;
+	}
+	if (!details.phoneNumber) {
+		contactsForm.setError('Номер телефона не может быть пустым!');
+		return;
+	}
+	contactsForm.setError('');
+	contactsForm.setSubmitButtonStatus(true);
+}
+function handleContactsFormSubmit({ details }: ContactsFormSubmitEvent) {
 	appState.setOrderDetails(details);
 	const requestBody = appState.getOrderRequestBody();
 
-	appState.events.emit<OnConfirmPurchase>('contacts:submit', { requestBody });
+	makePurchaseRequest(requestBody)
+		.then(() => {
+			appState.basket.getTotal();
+			orderConfirmationView.render(appState.basket.getTotal());
+			baseModalView.setContent(orderConfirmationView.getElement());
+
+			appState.basket.clear();
+		})
+		.catch((e) => console.log('Error: ' + e));
 }
+
 async function fetchProducts() {
 	return await apiClient.get<ProductList>('/product/');
 }
-
-async function confirmPurchase({ requestBody }: OnConfirmPurchase) {
+async function makePurchaseRequest(requestBody: OrderRequestBody) {
 	return await apiClient.post<ProductList>('/order/', requestBody);
 }
+
 fetchProducts()
 	.then((products) => {
 		const { items } = products;

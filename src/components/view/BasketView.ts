@@ -4,8 +4,6 @@ export class BasketView implements TBasketView {
 	private cardTemplateEl: HTMLTemplateElement;
 	private itemListEl: Element;
 	private totalPriceEl: Element;
-	private openBasketButton: Element;
-	private goToOrderButton: HTMLButtonElement;
 	private basketEl: Element;
 	private onBasketItemRemove: (product: Product) => void;
 	constructor({
@@ -65,8 +63,6 @@ export class BasketView implements TBasketView {
 		this.cardTemplateEl = cardTemplateEl;
 		this.itemListEl = itemListEl;
 		this.totalPriceEl = totalPriceEl;
-		this.openBasketButton = openBasketButton;
-		this.goToOrderButton = goToOrderButton;
 		this.onBasketItemRemove = onBasketItemRemove;
 
 		itemListEl.innerHTML = 'Корзина пуста!';

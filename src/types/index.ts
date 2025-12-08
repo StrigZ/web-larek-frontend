@@ -111,15 +111,23 @@ export type BaseModalView = {
 };
 
 export type OrderForm = {
-	render: () => void;
+	render: (details: OrderFormDetails) => void;
 	getElement: () => void;
 	reset: () => void;
 };
 
 export type ContactsForm = {
-	render: () => void;
+	render: (details: ContactsFormDetails) => void;
 	getElement: () => void;
 	reset: () => void;
+};
+
+export type OrderFormChangeEvent = {
+	details: OrderFormDetails;
+};
+
+export type ContactsFormChangeEvent = {
+	details: ContactsFormDetails;
 };
 
 export type OrderRequestBody = Omit<
@@ -133,6 +141,10 @@ export type OrderRequestBody = Omit<
 	items: Product['id'][];
 };
 
-export type OnConfirmPurchase = {
-	requestBody: OrderRequestBody;
+export type ContactsFormSubmitEvent = {
+	details: ContactsFormDetails;
+};
+
+export type OrderFormSubmitEvent = {
+	details: OrderFormDetails;
 };
