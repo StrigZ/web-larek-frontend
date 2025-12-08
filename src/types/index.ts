@@ -50,18 +50,26 @@ export type CatalogModel = {
 };
 
 export type BasketView = {
+	getElement: () => void;
 	render: (args: {
 		productsMap: Map<string, number>;
 		productsArray: Product[];
 		total: number;
 	}) => void;
-	getElement: () => void;
+};
+
+export type BasketViewConstructor = {
+	onStartOrder: (e: Event) => void;
+	onBasketItemRemove: (product: Product) => void;
+	onBasketOpen: () => void;
 };
 
 export type CardDetails = {
-	render: (product: Product) => void;
 	getElement: () => void;
+	render: (product: Product) => void;
 };
+
+export type CardDetailsConstructor = { onBasketAdd: (e: Event) => void };
 
 export type PaymentVariant = 'Онлайн' | 'При получении';
 
@@ -74,14 +82,18 @@ export type OrderDetails = {
 
 export type AppStateModel = {
 	getOrderRequestBody: () => OrderRequestBody;
-	setOrderDetails: (details: OrderFormDetails | ContactsFormDetails) => void;
 	getBasket: () => BasketModel;
 	getCatalog: () => CatalogModel;
 	getEvents: () => EventEmitter;
+	setOrderDetails: (details: OrderFormDetails | ContactsFormDetails) => void;
 };
 
 export type GalleryView = {
-	populateGallery: (items: Product[]) => void;
+	render: (items: Product[]) => void;
+};
+
+export type GalleryViewConstructor = {
+	onCardClick: (product: Product) => void;
 };
 
 export type PreviewOpenEvent = { product: Product };
@@ -110,15 +122,40 @@ export type BaseModalView = {
 };
 
 export type OrderForm = {
-	render: (details: OrderFormDetails) => void;
 	getElement: () => void;
+	render: (details: OrderFormDetails) => void;
+	reset: () => void;
+};
+
+export type OrderFormConstructor = {
+	onSubmit: (details: OrderFormDetails) => void;
+	onOrderDetailsChange: (details: OrderFormDetails) => void;
+};
+
+export type OrderConfirmationView = {
+	getElement: () => void;
+	render: (totalPrice: number) => void;
+};
+
+export type OrderConfirmationViewConstructor = {
+	onCloseButtonClick: () => void;
+};
+
+export type HeaderView = {
+	getElement: () => void;
+	render: (totalItemsCount: number) => void;
 	reset: () => void;
 };
 
 export type ContactsForm = {
-	render: (details: ContactsFormDetails) => void;
 	getElement: () => void;
+	render: (details: ContactsFormDetails) => void;
 	reset: () => void;
+};
+
+export type ContactsFormConstructor = {
+	onSubmit: (details: ContactsFormDetails) => void;
+	onOrderDetailsChange: (details: ContactsFormDetails) => void;
 };
 
 export type OrderFormChangeEvent = {

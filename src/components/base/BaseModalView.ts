@@ -8,10 +8,11 @@ export class BaseModalView implements TBaseModalView {
 		const modalEl = document.querySelector('#modal-container');
 		if (!modalEl) throw new Error('BaseModalView: modal was not found!');
 
-		this.modalEl = modalEl;
-		const contentEl = this.modalEl.querySelector('.modal__content');
+		const contentEl = modalEl.querySelector('.modal__content');
 		if (!contentEl)
 			throw new Error('BaseModalView: modal content was not found!');
+
+		this.modalEl = modalEl;
 		this.contentEl = contentEl;
 		this._attachListeners();
 	}
@@ -24,11 +25,11 @@ export class BaseModalView implements TBaseModalView {
 		this.modalEl.classList.add('modal_active');
 		document.body.style.overflow = 'hidden';
 	}
-
 	close() {
 		this.modalEl.classList.remove('modal_active');
 		document.body.style.overflow = '';
 	}
+
 	private _attachListeners() {
 		this.modalEl.addEventListener('click', () => this.close());
 		this.contentEl.addEventListener('click', (e) => e.stopPropagation());

@@ -8,6 +8,19 @@ export class Basket implements BasketModel {
 		this.onBasketChange = onBasketChange;
 	}
 
+	public getTotal() {
+		return this.itemsArray.reduce((prev, curr) => prev + (curr.price ?? 0), 0);
+	}
+	public getItemsCount() {
+		return this.itemsArray.length;
+	}
+	public getItemsMap() {
+		return this.items;
+	}
+	public getItemsArray() {
+		return this.itemsArray;
+	}
+
 	public add(product: Product) {
 		if (!product.price) return;
 
@@ -48,18 +61,7 @@ export class Basket implements BasketModel {
 		this.items.set(product.id, currIndex - 1);
 		this._changed();
 	}
-	public getTotal() {
-		return this.itemsArray.reduce((prev, curr) => prev + (curr.price ?? 0), 0);
-	}
-	public getItemsCount() {
-		return this.itemsArray.length;
-	}
-	public getItemsMap() {
-		return this.items;
-	}
-	public getItemsArray() {
-		return this.itemsArray;
-	}
+
 	public clear() {
 		this.items = new Map<string, number>();
 		this.itemsArray = [];

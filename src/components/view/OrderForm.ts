@@ -1,4 +1,8 @@
-import { OrderFormDetails, OrderForm as TOrderForm } from '../../types/index';
+import {
+	OrderFormConstructor,
+	OrderFormDetails,
+	OrderForm as TOrderForm,
+} from '../../types/index';
 
 export class OrderForm implements TOrderForm {
 	private formEl: HTMLFormElement;
@@ -8,13 +12,8 @@ export class OrderForm implements TOrderForm {
 	private errorSpan: Element;
 	private submitButton: HTMLButtonElement;
 	private details: OrderFormDetails;
-	constructor({
-		onSubmit,
-		onOrderDetailsChange,
-	}: {
-		onSubmit: (details: OrderFormDetails) => void;
-		onOrderDetailsChange: (details: OrderFormDetails) => void;
-	}) {
+
+	constructor({ onSubmit, onOrderDetailsChange }: OrderFormConstructor) {
 		const formTemplate = document.querySelector(
 			'#order'
 		) as HTMLTemplateElement | null;
@@ -92,21 +91,22 @@ export class OrderForm implements TOrderForm {
 		this.details = { address: '', paymentVariant: 'Онлайн' };
 	}
 
-	public render(details: OrderFormDetails) {
-		this.addressInput.value = details.address;
-		details.paymentVariant === 'Онлайн'
-			? this._activatePaymentMethodButton('card')
-			: this._activatePaymentMethodButton('cash');
-	}
-
 	public getElement() {
 		return this.formEl;
 	}
+
 	public setError(message: string) {
 		this.errorSpan.textContent = message;
 	}
 	public setSubmitButtonStatus(isActive: boolean) {
 		this.submitButton.disabled = !isActive;
+	}
+
+	public render(details: OrderFormDetails) {
+		this.addressInput.value = details.address;
+		details.paymentVariant === 'Онлайн'
+			? this._activatePaymentMethodButton('card')
+			: this._activatePaymentMethodButton('cash');
 	}
 	public reset() {
 		this.addressInput.value = '';

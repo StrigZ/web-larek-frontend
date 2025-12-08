@@ -1,5 +1,8 @@
-export class HeaderView {
+import { HeaderView as THeaderView } from '../../types';
+
+export class HeaderView implements THeaderView {
 	basketCounterEl: Element;
+
 	constructor() {
 		const basketCounterEl = document.querySelector('.header__basket-counter');
 		if (!basketCounterEl)

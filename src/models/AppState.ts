@@ -46,6 +46,7 @@ export class AppState implements AppStateModel {
 			items: this.basket.getItemsArray().map(({ id }) => id),
 		};
 	}
+
 	public setOrderDetails(details: Partial<OrderDetails>) {
 		this.orderDetails = { ...this.orderDetails, ...details };
 	}

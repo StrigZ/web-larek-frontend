@@ -1,4 +1,5 @@
 import {
+	ContactsFormConstructor,
 	ContactsFormDetails,
 	ContactsForm as TContactsForm,
 } from '../../types/index';
@@ -10,13 +11,8 @@ export class ContactsForm implements TContactsForm {
 	private errorSpan: Element;
 	private submitButton: HTMLButtonElement;
 	private details: ContactsFormDetails;
-	constructor({
-		onSubmit,
-		onOrderDetailsChange,
-	}: {
-		onSubmit: (details: ContactsFormDetails) => void;
-		onOrderDetailsChange: (details: ContactsFormDetails) => void;
-	}) {
+
+	constructor({ onSubmit, onOrderDetailsChange }: ContactsFormConstructor) {
 		const formTemplate = document.querySelector(
 			'#contacts'
 		) as HTMLTemplateElement | null;
@@ -75,20 +71,22 @@ export class ContactsForm implements TContactsForm {
 		this.details = { email: '', phoneNumber: '' };
 	}
 
-	public render(details: ContactsFormDetails) {
-		this.emailInput.value = details.email;
-		this.phoneNumberInput.value = details.phoneNumber;
-	}
-
 	public getElement() {
 		return this.formEl;
 	}
+
 	public setError(message: string) {
 		this.errorSpan.textContent = message;
 	}
 	public setSubmitButtonStatus(isActive: boolean) {
 		this.submitButton.disabled = !isActive;
 	}
+
+	public render(details: ContactsFormDetails) {
+		this.emailInput.value = details.email;
+		this.phoneNumberInput.value = details.phoneNumber;
+	}
+
 	public reset() {
 		this.phoneNumberInput.value = '';
 		this.emailInput.value = '';

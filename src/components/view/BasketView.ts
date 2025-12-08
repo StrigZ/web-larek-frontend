@@ -1,4 +1,8 @@
-import { Product, BasketView as TBasketView } from '../../types';
+import {
+	BasketViewConstructor,
+	Product,
+	BasketView as TBasketView,
+} from '../../types';
 
 export class BasketView implements TBasketView {
 	private cardTemplateEl: HTMLTemplateElement;
@@ -6,20 +10,18 @@ export class BasketView implements TBasketView {
 	private totalPriceEl: Element;
 	private basketEl: Element;
 	private onBasketItemRemove: (product: Product) => void;
+
 	constructor({
 		onStartOrder,
 		onBasketItemRemove,
 		onBasketOpen,
-	}: {
-		onStartOrder: (e: Event) => void;
-		onBasketItemRemove: (product: Product) => void;
-		onBasketOpen: () => void;
-	}) {
+	}: BasketViewConstructor) {
 		const basketTemplate = document.querySelector(
 			'#basket'
 		) as HTMLTemplateElement | null;
 		if (!basketTemplate)
 			throw new Error('BasketView: basket template was not found!');
+
 		const clone = basketTemplate.content.cloneNode(true) as Element;
 		const basketEl = clone.firstElementChild as Element | null;
 		if (!basketEl)
@@ -33,43 +35,45 @@ export class BasketView implements TBasketView {
 		if (!cardTemplateEl) {
 			throw new Error('initBasketModal: Basket card template  was not found!');
 		}
+
 		const itemListEl = basketEl.querySelector('.basket__list');
-		if (!itemListEl) {
-			throw new Error(
-				'initBasketView: Basket item list element was not found!'
-			);
-		}
 		const totalPriceEl = basketEl.querySelector('.basket__price');
-		if (!totalPriceEl) {
-			throw new Error(
-				'initBasketView: Basket total price element was not found!'
-			);
-		}
 		const openBasketButton = document.querySelector(
 			'.header__basket'
 		) as HTMLButtonElement | null;
-		if (!openBasketButton) {
-			throw new Error(
-				'initBasketView: open basket button element was not found!'
-			);
-		}
 		const goToOrderButton = basketEl.querySelector(
 			'.modal__actions .button'
 		) as HTMLButtonElement | null;
+
 		if (!goToOrderButton)
 			throw new Error('initBasketView: goToOrderButton was not found!');
+		if (!openBasketButton)
+			throw new Error(
+				'initBasketView: open basket button element was not found!'
+			);
+		if (!totalPriceEl)
+			throw new Error(
+				'initBasketView: Basket total price element was not found!'
+			);
+		if (!itemListEl)
+			throw new Error(
+				'initBasketView: Basket item list element was not found!'
+			);
+
+		itemListEl.innerHTML = 'Корзина пуста!';
+		totalPriceEl.textContent = '0 синапсов';
+		goToOrderButton.addEventListener('click', onStartOrder);
+		openBasketButton.addEventListener('click', onBasketOpen);
 
 		this.basketEl = basketEl;
 		this.cardTemplateEl = cardTemplateEl;
 		this.itemListEl = itemListEl;
 		this.totalPriceEl = totalPriceEl;
 		this.onBasketItemRemove = onBasketItemRemove;
+	}
 
-		itemListEl.innerHTML = 'Корзина пуста!';
-		totalPriceEl.textContent = '0 синапсов';
-
-		goToOrderButton.addEventListener('click', onStartOrder);
-		openBasketButton.addEventListener('click', onBasketOpen);
+	public getElement() {
+		return this.basketEl;
 	}
 
 	public render({
@@ -98,10 +102,6 @@ export class BasketView implements TBasketView {
 			this.totalPriceEl.textContent = '0 синапсов';
 			this.itemListEl.textContent = 'Корзина пуста!';
 		}
-	}
-
-	public getElement() {
-		return this.basketEl;
 	}
 
 	private _createBasketItem(data: Product, index: string) {

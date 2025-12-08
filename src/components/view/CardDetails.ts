@@ -1,15 +1,25 @@
-import { CardDetails as TCardDetails, Product } from '../../types';
+import {
+	CardDetails as TCardDetails,
+	Product,
+	CardDetailsConstructor,
+} from '../../types';
 import { CDN_URL } from '../../utils/constants';
 
 export class CardDetails implements TCardDetails {
 	private cardDetailsEl: Element;
+	private titleEl: Element;
+	private categoryEl: Element;
+	private imageEl: HTMLImageElement;
+	private priceEl: Element;
+	private descriptionEl: Element;
 
-	constructor({ onBasketAdd }: { onBasketAdd: (e: Event) => void }) {
+	constructor({ onBasketAdd }: CardDetailsConstructor) {
 		const cardDetailsTemplate = document.querySelector(
 			'#card-preview'
 		) as HTMLTemplateElement | null;
 		if (!cardDetailsTemplate)
 			throw new Error('Preview: preview template was not found!');
+
 		const clone = cardDetailsTemplate.content.cloneNode(true) as Element;
 		const cardDetailsEl = clone.firstElementChild;
 		if (!cardDetailsEl)
@@ -17,47 +27,55 @@ export class CardDetails implements TCardDetails {
 				'Preview: preview was not found inside preview template!'
 			);
 
-		this.cardDetailsEl = cardDetailsEl;
-		const addToBasketButton =
-			this.cardDetailsEl.querySelector('.card__row button');
-		if (!addToBasketButton) {
-			throw new Error('initPreview: addToBasketButton was not found!');
-		}
-		addToBasketButton.addEventListener('click', onBasketAdd);
-	}
-
-	public render({ category, description, image, price, title }: Product) {
-		const titleEl = this.cardDetailsEl.querySelector('.card__title');
-		if (!titleEl) {
-			throw new Error('initPreview: titleEl was not found!');
-		}
-		const categoryEl = this.cardDetailsEl.querySelector('.card__category');
-		if (!categoryEl) {
-			throw new Error('initPreview: categoryEl was not found!');
-		}
-		const imageEl = this.cardDetailsEl.querySelector(
+		const addToBasketButton = cardDetailsEl.querySelector('.card__row button');
+		const titleEl = cardDetailsEl.querySelector('.card__title');
+		const categoryEl = cardDetailsEl.querySelector('.card__category');
+		const imageEl = cardDetailsEl.querySelector(
 			'.card__image'
 		) as HTMLImageElement | null;
+		const priceEl = cardDetailsEl.querySelector('.card__price');
+		const descriptionEl = cardDetailsEl.querySelector('.card__text');
+
+		if (!titleEl) {
+			throw new Error('CardDetails: titleEl was not found!');
+		}
+		if (!categoryEl) {
+			throw new Error('CardDetails: categoryEl was not found!');
+		}
 		if (!imageEl) {
-			throw new Error('initPreview: imageEl was not found!');
+			throw new Error('CardDetails: imageEl was not found!');
 		}
-		const priceEl = this.cardDetailsEl.querySelector('.card__price');
 		if (!priceEl) {
-			throw new Error('initPreview: priceEl was not found!');
+			throw new Error('CardDetails: priceEl was not found!');
 		}
-		const descriptionEl = this.cardDetailsEl.querySelector('.card__text');
 		if (!descriptionEl) {
-			throw new Error('initPreview: descriptionEl was not found!');
+			throw new Error('CardDetails: descriptionEl was not found!');
+		}
+		if (!addToBasketButton) {
+			throw new Error('CardDetails: addToBasketButton was not found!');
 		}
 
-		titleEl.textContent = title;
-		categoryEl.textContent = category;
-		imageEl.src = `${CDN_URL}${image}`;
-		priceEl.textContent = price ? `${price.toString()} синапсов` : 'Бесценно';
-		descriptionEl.textContent = description;
+		addToBasketButton.addEventListener('click', onBasketAdd);
+
+		this.titleEl = titleEl;
+		this.categoryEl = categoryEl;
+		this.imageEl = imageEl;
+		this.priceEl = priceEl;
+		this.descriptionEl = descriptionEl;
+		this.cardDetailsEl = cardDetailsEl;
 	}
 
 	public getElement() {
 		return this.cardDetailsEl;
+	}
+
+	public render({ category, description, image, price, title }: Product) {
+		this.titleEl.textContent = title;
+		this.categoryEl.textContent = category;
+		this.imageEl.src = `${CDN_URL}${image}`;
+		this.priceEl.textContent = price
+			? `${price.toString()} синапсов`
+			: 'Бесценно';
+		this.descriptionEl.textContent = description;
 	}
 }

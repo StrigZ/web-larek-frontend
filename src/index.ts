@@ -47,7 +47,7 @@ const basketView = new BasketView({
 
 const galleryView = new GalleryView({
 	onCardClick: (product) =>
-		appState.getEvents().emit<PreviewOpenEvent>('preview:open', { product }),
+		appState.getEvents().emit<PreviewOpenEvent>('details:open', { product }),
 });
 
 const orderForm = new OrderForm({
@@ -74,7 +74,7 @@ const orderConfirmationView = new OrderConfirmationView({
 	onCloseButtonClick: () => baseModalView.close(),
 });
 
-appState.getEvents().on<PreviewOpenEvent>('preview:open', handlePreviewOpen);
+appState.getEvents().on<PreviewOpenEvent>('details:open', handlePreviewOpen);
 
 appState.getEvents().on('basket:change', handleBasketChange);
 appState.getEvents().on<BasketAddEvent>('basket:add', handleBasketAdd);
@@ -99,11 +99,11 @@ appState
 
 function handlePreviewOpen({ product }: PreviewOpenEvent) {
 	const productData = appState.getCatalog().getItemById(product.id);
-	const preview = new CardDetails({
+	const cardDetails = new CardDetails({
 		onBasketAdd: () => appState.getEvents().emit('basket:add', { product }),
 	});
-	preview.render(productData);
-	baseModalView.setContent(preview.getElement());
+	cardDetails.render(productData);
+	baseModalView.setContent(cardDetails.getElement());
 	baseModalView.open();
 }
 function handleBasketChange() {
@@ -188,6 +188,6 @@ fetchProducts()
 	.then((products) => {
 		const { items } = products;
 		appState.getCatalog().setItems(items);
-		galleryView.populateGallery(items);
+		galleryView.render(items);
 	})
 	.catch((e) => console.error(e));

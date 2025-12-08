@@ -7,9 +7,6 @@ export class Catalog implements CatalogModel {
 		this.items = [];
 	}
 
-	public setItems(items: Product[]) {
-		this.items = items;
-	}
 	public getItemById(id: string) {
 		const item = this.items.find((item) => item.id === id);
 		if (!item) {
@@ -22,5 +19,9 @@ export class Catalog implements CatalogModel {
 	}
 	public getItems() {
 		return this.items;
+	}
+
+	public setItems(items: Product[]) {
+		this.items = items;
 	}
 }

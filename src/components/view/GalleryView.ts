@@ -1,27 +1,35 @@
-import { Product, GalleryView as TGalleryView } from '../../types';
+import {
+	GalleryViewConstructor,
+	Product,
+	GalleryView as TGalleryView,
+} from '../../types';
 import { CDN_URL } from '../../utils/constants';
 
 export class GalleryView implements TGalleryView {
 	private galleryEl: Element;
 	private cardTemplateEl: HTMLTemplateElement;
 	private onCardClick: (product: Product) => void;
-	constructor({ onCardClick }: { onCardClick: (product: Product) => void }) {
+
+	constructor({ onCardClick }: GalleryViewConstructor) {
 		const galleryEl = document.querySelector('.gallery');
 		if (!galleryEl) {
 			throw new Error('GalleryView: Gallery element was not found!');
 		}
-		this.galleryEl = galleryEl;
+
 		const cardTemplateEl = document.querySelector(
 			'#card-catalog'
 		) as HTMLTemplateElement | null;
 		if (!cardTemplateEl) {
 			throw new Error('GalleryView: Card template element was not found!');
 		}
-		this.cardTemplateEl = cardTemplateEl;
+
 		this.onCardClick = onCardClick;
+
+		this.galleryEl = galleryEl;
+		this.cardTemplateEl = cardTemplateEl;
 	}
 
-	public populateGallery(items: Product[]) {
+	public render(items: Product[]) {
 		items.forEach((data) =>
 			this.galleryEl.append(this._createProductCard(data))
 		);
