@@ -1,13 +1,5 @@
 import './scss/styles.scss';
 
-import { apiClient } from './components/base/api';
-import { EventEmitter } from './components/base/events';
-
-import { AppState } from './models/AppState';
-import { Basket } from './models/Basket';
-import { BasketView } from './components/view/BasketView';
-import { Catalog } from './models/Catalog';
-
 import type {
 	BasketAddEvent,
 	BasketRemoveEvent,
@@ -20,11 +12,20 @@ import type {
 	OrderRequestBody,
 	PreviewOpenEvent,
 } from './types';
+
+import { AppState } from './models/AppState';
+import { Basket } from './models/Basket';
+import { Catalog } from './models/Catalog';
+
+import { apiClient } from './components/base/api';
+import { EventEmitter } from './components/base/events';
+
+import { OrderConfirmationView } from './components/view/OrderConfirmationView';
+import { BasketView } from './components/view/BasketView';
 import { OrderForm } from './components/view/OrderForm';
 import { GalleryView } from './components/view/GalleryView';
 import { CardDetails } from './components/view/CardDetails';
 import { ContactsForm } from './components/view/ContactsForm';
-import { OrderConfirmationView } from './components/view/OrderConfirmationView';
 import { HeaderView } from './components/view/HeaderView';
 import { ModalView } from './components/view/ModalView';
 
