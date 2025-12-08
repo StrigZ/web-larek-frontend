@@ -65,7 +65,7 @@ export class Basket implements BasketModel {
 	 */
 	public remove(product: Product) {
 		const idx = this.itemsArray.findIndex(({ id }) => id === product.id);
-		if (idx > 0) {
+		if (idx !== -1) {
 			this.itemsArray.splice(idx, 1);
 		}
 
