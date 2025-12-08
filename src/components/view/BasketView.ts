@@ -6,10 +6,11 @@ import {
 import { BaseElementView } from '../base/BaseElementView';
 
 export class BasketView extends BaseElementView implements TBasketView {
+	protected baseElement: Element;
 	private cardTemplateEl: HTMLTemplateElement;
 	private itemListEl: Element;
 	private totalPriceEl: Element;
-	protected baseElement: Element;
+	private goToOrderButton: HTMLButtonElement;
 	private onBasketItemRemove: (product: Product) => void;
 
 	constructor({
@@ -64,6 +65,7 @@ export class BasketView extends BaseElementView implements TBasketView {
 
 		itemListEl.innerHTML = 'Корзина пуста!';
 		totalPriceEl.textContent = '0 синапсов';
+		goToOrderButton.disabled = true;
 		goToOrderButton.addEventListener('click', onStartOrder);
 		openBasketButton.addEventListener('click', onBasketOpen);
 
@@ -71,6 +73,7 @@ export class BasketView extends BaseElementView implements TBasketView {
 		this.cardTemplateEl = cardTemplateEl;
 		this.itemListEl = itemListEl;
 		this.totalPriceEl = totalPriceEl;
+		this.goToOrderButton = goToOrderButton;
 		this.onBasketItemRemove = onBasketItemRemove;
 	}
 
@@ -96,9 +99,11 @@ export class BasketView extends BaseElementView implements TBasketView {
 			});
 
 			this.totalPriceEl.textContent = `${total.toString()} синапсов`;
+			this.goToOrderButton.disabled = false;
 		} else {
 			this.totalPriceEl.textContent = '0 синапсов';
 			this.itemListEl.textContent = 'Корзина пуста!';
+			this.goToOrderButton.disabled = true;
 		}
 	}
 
