@@ -3,14 +3,14 @@ import {
 	ContactsFormDetails,
 	ContactsForm as TContactsForm,
 } from '../../types/index';
-import { BaseViewElement } from '../base/BaseViewElement';
+import { BaseFormView } from '../base/BaseFormView';
 
-export class ContactsForm extends BaseViewElement implements TContactsForm {
-	protected baseElement: HTMLFormElement;
+export class ContactsForm extends BaseFormView implements TContactsForm {
+	protected baseElement;
+	protected submitButton;
+	protected errorContainer;
 	private emailInput: HTMLInputElement;
 	private phoneNumberInput: HTMLInputElement;
-	private errorSpan: Element;
-	private submitButton: HTMLButtonElement;
 	private details: ContactsFormDetails;
 
 	constructor({ onSubmit, onOrderDetailsChange }: ContactsFormConstructor) {
@@ -34,7 +34,7 @@ export class ContactsForm extends BaseViewElement implements TContactsForm {
 		const phoneNumberInput = formEl.querySelector(
 			'input[name="phone"]'
 		) as HTMLInputElement | null;
-		const errorSpan = formEl.querySelector('.form__errors');
+		const errorContainer = formEl.querySelector('.form__errors');
 		const submitButton = formEl.querySelector(
 			'button[type="submit"]'
 		) as HTMLButtonElement | null;
@@ -43,7 +43,7 @@ export class ContactsForm extends BaseViewElement implements TContactsForm {
 			throw new Error('populateForm: email input was not found!');
 		if (!phoneNumberInput)
 			throw new Error('populateForm: phone number input was not found!');
-		if (!errorSpan)
+		if (!errorContainer)
 			throw new Error(
 				'ContactsForm: form errors element was not found inside formTemplate!'
 			);
@@ -66,18 +66,11 @@ export class ContactsForm extends BaseViewElement implements TContactsForm {
 		});
 
 		this.baseElement = formEl;
-		this.errorSpan = errorSpan;
+		this.errorContainer = errorContainer;
 		this.emailInput = emailInput;
 		this.phoneNumberInput = phoneNumberInput;
 		this.submitButton = submitButton;
 		this.details = { email: '', phoneNumber: '' };
-	}
-
-	public setError(message: string) {
-		this.errorSpan.textContent = message;
-	}
-	public setSubmitButtonStatus(isActive: boolean) {
-		this.submitButton.disabled = !isActive;
 	}
 
 	public render(details: ContactsFormDetails) {

@@ -1,6 +1,11 @@
 import { EventEmitter } from '../components/base/events';
 
-export type ProductList = {
+export type ConfirmPurchaseResponse = {
+	id: string;
+	total: number;
+};
+
+export type GetItemsResponse = {
 	total: number;
 	items: Product[];
 };
@@ -49,6 +54,43 @@ export type CatalogModel = {
 	getItems: () => Product[];
 };
 
+export type PaymentVariant = 'Онлайн' | 'При получении';
+
+export type OrderDetails = {
+	paymentVariant: PaymentVariant;
+	address: string;
+	email: string;
+	phoneNumber: string;
+};
+
+export type AppStateModel = {
+	getOrderRequestBody: () => OrderRequestBody;
+	getBasket: () => BasketModel;
+	getCatalog: () => CatalogModel;
+	getEvents: () => EventEmitter;
+	setOrderDetails: (details: OrderFormDetails | ContactsFormDetails) => void;
+};
+
+export type OrderFormDetails = Pick<OrderDetails, 'paymentVariant' | 'address'>;
+export type ContactsFormDetails = Pick<OrderDetails, 'email' | 'phoneNumber'>;
+
+export type BaseModalView = {
+	setContent: (content: Element) => void;
+	open: () => void;
+	close: () => void;
+};
+
+export type BaseElementView = {
+	render: (...args: unknown[]) => void;
+	getElement: () => Element;
+};
+
+export type BaseFormView = {
+	reset: () => void;
+	setError: (message: string) => void;
+	setSubmitButtonStatus: (isActive: boolean) => void;
+};
+
 export type BasketView = {
 	render: (args: {
 		productsMap: Map<string, number>;
@@ -69,21 +111,34 @@ export type CardDetails = {
 
 export type CardDetailsConstructor = { onBasketAdd: (e: Event) => void };
 
-export type PaymentVariant = 'Онлайн' | 'При получении';
-
-export type OrderDetails = {
-	paymentVariant: PaymentVariant;
-	address: string;
-	email: string;
-	phoneNumber: string;
+export type OrderForm = {
+	render: (details: OrderFormDetails) => void;
 };
 
-export type AppStateModel = {
-	getOrderRequestBody: () => OrderRequestBody;
-	getBasket: () => BasketModel;
-	getCatalog: () => CatalogModel;
-	getEvents: () => EventEmitter;
-	setOrderDetails: (details: OrderFormDetails | ContactsFormDetails) => void;
+export type OrderFormConstructor = {
+	onSubmit: (details: OrderFormDetails) => void;
+	onOrderDetailsChange: (details: OrderFormDetails) => void;
+};
+
+export type ContactsForm = {
+	render: (details: ContactsFormDetails) => void;
+};
+
+export type ContactsFormConstructor = {
+	onSubmit: (details: ContactsFormDetails) => void;
+	onOrderDetailsChange: (details: ContactsFormDetails) => void;
+};
+
+export type OrderConfirmationView = {
+	render: (totalPrice: number) => void;
+};
+
+export type OrderConfirmationViewConstructor = {
+	onCloseButtonClick: () => void;
+};
+
+export type HeaderView = {
+	render: (totalItemsCount: number) => void;
 };
 
 export type GalleryView = {
@@ -97,70 +152,16 @@ export type GalleryViewConstructor = {
 export type PreviewOpenEvent = { product: Product };
 export type BasketAddEvent = { product: Product };
 export type BasketRemoveEvent = { product: Product };
-
-export type OrderFormModal = {
-	showOrderForm: () => void;
-	hideOrderForm: () => void;
-	populateOrderForm: (details: OrderFormDetails) => void;
-};
-
-export type OrderModalConstructor = {
-	formTemplateQuery: string;
-};
-
-export type OrderFormDetails = Pick<OrderDetails, 'paymentVariant' | 'address'>;
-export type ContactsFormDetails = Pick<OrderDetails, 'email' | 'phoneNumber'>;
-
-export type OrderSubmitEvent = { details: OrderFormDetails };
-
-export type BaseModalView = {
-	setContent: (content: Element) => void;
-	open: () => void;
-	close: () => void;
-};
-
-export type BaseViewElement = {
-	render: (...args: unknown[]) => void;
-	getElement: () => Element;
-};
-
-export type OrderForm = {
-	reset: () => void;
-};
-
-export type OrderFormConstructor = {
-	onSubmit: (details: OrderFormDetails) => void;
-	onOrderDetailsChange: (details: OrderFormDetails) => void;
-};
-
-export type OrderConfirmationView = {
-	render: (totalPrice: number) => void;
-};
-
-export type OrderConfirmationViewConstructor = {
-	onCloseButtonClick: () => void;
-};
-
-export type HeaderView = {
-	render: (totalItemsCount: number) => void;
-	reset: () => void;
-};
-
-export type ContactsForm = {
-	render: (details: ContactsFormDetails) => void;
-	reset: () => void;
-};
-
-export type ContactsFormConstructor = {
-	onSubmit: (details: ContactsFormDetails) => void;
-	onOrderDetailsChange: (details: ContactsFormDetails) => void;
-};
-
 export type OrderFormChangeEvent = {
 	details: OrderFormDetails;
 };
-
+export type OrderFormSubmitEvent = {
+	details: OrderFormDetails;
+};
 export type ContactsFormChangeEvent = {
+	details: ContactsFormDetails;
+};
+export type ContactsFormSubmitEvent = {
 	details: ContactsFormDetails;
 };
 
@@ -173,12 +174,4 @@ export type OrderRequestBody = Omit<
 	total: number | 'Бесценно';
 } & {
 	items: Product['id'][];
-};
-
-export type ContactsFormSubmitEvent = {
-	details: ContactsFormDetails;
-};
-
-export type OrderFormSubmitEvent = {
-	details: OrderFormDetails;
 };

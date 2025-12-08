@@ -1,6 +1,6 @@
-import { BaseViewElement as TBaseViewElement } from '../../types';
+import { BaseElementView as TBaseElementView } from '../../types';
 
-export abstract class BaseViewElement implements TBaseViewElement {
+export abstract class BaseElementView implements TBaseElementView {
 	protected abstract baseElement: Element;
 
 	public getElement() {

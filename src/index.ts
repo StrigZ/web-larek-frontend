@@ -11,13 +11,14 @@ import { Catalog } from './models/Catalog';
 import type {
 	BasketAddEvent,
 	BasketRemoveEvent,
+	ConfirmPurchaseResponse,
 	ContactsFormChangeEvent,
 	ContactsFormSubmitEvent,
+	GetItemsResponse,
 	OrderFormChangeEvent,
 	OrderFormSubmitEvent,
 	OrderRequestBody,
 	PreviewOpenEvent,
-	ProductList,
 } from './types';
 import { OrderForm } from './components/view/OrderForm';
 import { BaseModalView } from './components/base/BaseModalView';
@@ -131,7 +132,7 @@ function handleOrderFormOpen() {
 }
 function handleOrderFormChange({ details }: OrderFormChangeEvent) {
 	orderForm.setSubmitButtonStatus(false);
-	if (!details.address) {
+	if (!details.address.trim()) {
 		orderForm.setError('Адрес не может быть пустым!');
 		return;
 	}
@@ -140,7 +141,6 @@ function handleOrderFormChange({ details }: OrderFormChangeEvent) {
 }
 function handleOrderFormSubmit({ details }: OrderFormSubmitEvent) {
 	appState.setOrderDetails(details);
-
 	appState.getEvents().emit('contacts:open');
 }
 function handleContactsFormOpen() {
@@ -150,11 +150,11 @@ function handleContactsFormOpen() {
 }
 function handleContactsFormChange({ details }: ContactsFormChangeEvent) {
 	contactsForm.setSubmitButtonStatus(false);
-	if (!details.email) {
+	if (!details.email.trim()) {
 		contactsForm.setError('Email не может быть пустым!');
 		return;
 	}
-	if (!details.phoneNumber) {
+	if (!details.phoneNumber.trim()) {
 		contactsForm.setError('Номер телефона не может быть пустым!');
 		return;
 	}
@@ -178,10 +178,10 @@ function handleContactsFormSubmit({ details }: ContactsFormSubmitEvent) {
 }
 
 async function fetchProducts() {
-	return await apiClient.get<ProductList>('/product/');
+	return await apiClient.get<GetItemsResponse>('/product/');
 }
 async function makePurchaseRequest(requestBody: OrderRequestBody) {
-	return await apiClient.post<ProductList>('/order/', requestBody);
+	return await apiClient.post<ConfirmPurchaseResponse>('/order/', requestBody);
 }
 
 fetchProducts()

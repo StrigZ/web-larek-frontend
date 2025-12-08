@@ -3,9 +3,9 @@ import {
 	Product,
 	BasketView as TBasketView,
 } from '../../types';
-import { BaseViewElement } from '../base/BaseViewElement';
+import { BaseElementView } from '../base/BaseElementView';
 
-export class BasketView extends BaseViewElement implements TBasketView {
+export class BasketView extends BaseElementView implements TBasketView {
 	private cardTemplateEl: HTMLTemplateElement;
 	private itemListEl: Element;
 	private totalPriceEl: Element;

@@ -2,10 +2,10 @@ import {
 	OrderConfirmationViewConstructor,
 	OrderConfirmationView as TOrderConfirmationView,
 } from '../../types';
-import { BaseViewElement } from '../base/BaseViewElement';
+import { BaseElementView } from '../base/BaseElementView';
 
 export class OrderConfirmationView
-	extends BaseViewElement
+	extends BaseElementView
 	implements TOrderConfirmationView
 {
 	protected baseElement: Element;

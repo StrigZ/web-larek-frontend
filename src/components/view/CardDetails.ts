@@ -4,9 +4,9 @@ import {
 	CardDetailsConstructor,
 } from '../../types';
 import { CDN_URL } from '../../utils/constants';
-import { BaseViewElement } from '../base/BaseViewElement';
+import { BaseElementView } from '../base/BaseElementView';
 
-export class CardDetails extends BaseViewElement implements TCardDetails {
+export class CardDetails extends BaseElementView implements TCardDetails {
 	protected baseElement: Element;
 	private titleEl: Element;
 	private categoryEl: Element;

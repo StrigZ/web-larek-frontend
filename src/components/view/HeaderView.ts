@@ -1,7 +1,7 @@
 import { HeaderView as THeaderView } from '../../types';
-import { BaseViewElement } from '../base/BaseViewElement';
+import { BaseElementView } from '../base/BaseElementView';
 
-export class HeaderView extends BaseViewElement implements THeaderView {
+export class HeaderView extends BaseElementView implements THeaderView {
 	protected baseElement: Element;
 
 	constructor() {

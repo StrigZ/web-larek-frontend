@@ -4,9 +4,9 @@ import {
 	GalleryView as TGalleryView,
 } from '../../types';
 import { CDN_URL } from '../../utils/constants';
-import { BaseViewElement } from '../base/BaseViewElement';
+import { BaseElementView } from '../base/BaseElementView';
 
-export class GalleryView extends BaseViewElement implements TGalleryView {
+export class GalleryView extends BaseElementView implements TGalleryView {
 	protected baseElement: Element;
 	private cardTemplateEl: HTMLTemplateElement;
 	private onCardClick: (product: Product) => void;

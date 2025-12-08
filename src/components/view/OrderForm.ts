@@ -3,15 +3,15 @@ import {
 	OrderFormDetails,
 	OrderForm as TOrderForm,
 } from '../../types/index';
-import { BaseViewElement } from '../base/BaseViewElement';
+import { BaseFormView } from '../base/BaseFormView';
 
-export class OrderForm extends BaseViewElement implements TOrderForm {
-	protected baseElement: HTMLFormElement;
+export class OrderForm extends BaseFormView implements TOrderForm {
+	protected baseElement;
+	protected errorContainer;
+	protected submitButton;
 	private addressInput: HTMLInputElement;
 	private cardButton: HTMLButtonElement;
 	private cashButton: HTMLButtonElement;
-	private errorSpan: Element;
-	private submitButton: HTMLButtonElement;
 	private details: OrderFormDetails;
 
 	constructor({ onSubmit, onOrderDetailsChange }: OrderFormConstructor) {
@@ -32,8 +32,8 @@ export class OrderForm extends BaseViewElement implements TOrderForm {
 		const addressInput = formEl.querySelector('input');
 		if (!addressInput)
 			throw new Error('populateForm: address input was not found!');
-		const errorSpan = formEl.querySelector('.form__errors');
-		if (!errorSpan)
+		const errorContainer = formEl.querySelector('.form__errors');
+		if (!errorContainer)
 			throw new Error(
 				'OrderForm: form errors element was not found inside formTemplate!'
 			);
@@ -87,17 +87,10 @@ export class OrderForm extends BaseViewElement implements TOrderForm {
 		this.baseElement = formEl;
 		this.cardButton = cardButton;
 		this.cashButton = cashButton;
-		this.errorSpan = errorSpan;
+		this.errorContainer = errorContainer;
 		this.addressInput = addressInput;
 		this.submitButton = submitButton;
 		this.details = { address: '', paymentVariant: 'Онлайн' };
-	}
-
-	public setError(message: string) {
-		this.errorSpan.textContent = message;
-	}
-	public setSubmitButtonStatus(isActive: boolean) {
-		this.submitButton.disabled = !isActive;
 	}
 
 	public render(details: OrderFormDetails) {
