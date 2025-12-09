@@ -89,6 +89,15 @@ export type BaseFormView = {
 	setSubmitButtonStatus: (isActive: boolean) => void;
 };
 
+export type BasketViewItem = {
+	createBasketItems: (products: Product[]) => Element[];
+	createBasketItem: (product: Product, index: string) => Element;
+};
+
+export type BasketViewItemConstructor = {
+	onDelete: (product: Product) => void;
+};
+
 export type BasketView = {
 	render: (args: { products: Element[]; total: number }) => void;
 };

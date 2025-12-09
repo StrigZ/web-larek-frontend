@@ -1,10 +1,14 @@
-import { Product } from '../../types';
+import {
+	BasketViewItemConstructor,
+	Product,
+	BasketViewItem as TBasketViewItem,
+} from '../../types';
 
 /**
  * Класс для создания элементов товаров в корзине.
  * Генерирует DOM-элементы для отображения товаров в корзине.
  */
-export class BasketItemView {
+export class BasketItemView implements TBasketViewItem {
 	private template: HTMLTemplateElement;
 	private onDelete: (product: Product) => void;
 
@@ -12,7 +16,7 @@ export class BasketItemView {
 	 * Создает экземпляр BasketItemView.
 	 * @param onDelete - Обработчик удаления товара из корзины.
 	 */
-	constructor({ onDelete }: { onDelete: (product: Product) => void }) {
+	constructor({ onDelete }: BasketViewItemConstructor) {
 		const template = document.querySelector(
 			'#card-basket'
 		) as HTMLTemplateElement | null;
