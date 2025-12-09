@@ -143,6 +143,9 @@ function handleOrderFormOpen() {
 	modalView.open();
 }
 function handleOrderFormChange({ details }: OrderFormChangeEvent) {
+	orderForm.render(details);
+	modalView.setContent(orderForm.getElement());
+
 	orderForm.setSubmitButtonStatus(false);
 	if (!details.address.trim()) {
 		orderForm.setError('Адрес не может быть пустым!');
@@ -161,6 +164,9 @@ function handleContactsFormOpen() {
 	modalView.open();
 }
 function handleContactsFormChange({ details }: ContactsFormChangeEvent) {
+	contactsForm.render(details);
+	modalView.setContent(contactsForm.getElement());
+
 	contactsForm.setSubmitButtonStatus(false);
 	if (!details.email.trim()) {
 		contactsForm.setError('Email не может быть пустым!');

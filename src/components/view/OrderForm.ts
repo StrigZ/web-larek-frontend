@@ -74,12 +74,10 @@ export class OrderForm extends BaseFormView implements TOrderForm {
 			);
 
 		cardButton.addEventListener('click', () => {
-			this._activatePaymentMethodButton('card');
 			this.details = { ...this.details, paymentVariant: 'Онлайн' };
 			onOrderDetailsChange(this.details);
 		});
 		cashButton.addEventListener('click', () => {
-			this._activatePaymentMethodButton('cash');
 			this.details = { ...this.details, paymentVariant: 'При получении' };
 			onOrderDetailsChange(this.details);
 		});
