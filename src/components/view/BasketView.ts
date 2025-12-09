@@ -97,30 +97,18 @@ export class BasketView extends BaseElementView implements TBasketView {
 
 	/**
 	 * Отображает корзину с товарами.
-	 * @param productsMap - Карта товаров и их количества.
-	 * @param productsArray - Массив товаров в корзине.
+	 * @param products - Карта товаров и их количества.
 	 * @param total - Общая стоимость корзины.
 	 */
-	public render({
-		productsArray,
-		productsMap,
-		total,
-	}: {
-		productsMap: Map<string, number>;
-		productsArray: Product[];
-		total: number;
-	}) {
+	public render({ products, total }: { products: Product[]; total: number }) {
 		this.itemListEl.innerHTML = '';
-		const uniqueItemsArray = Array.from(new Set(productsArray));
+		const uniqueItemsArray = Array.from(new Set(products));
 
 		if (total > 0) {
 			// Отображение товаров в корзине
-			uniqueItemsArray.forEach((product) => {
-				const index = productsMap.get(product.id);
-				if (!index) return;
-
+			uniqueItemsArray.forEach((product, i) => {
 				return this.itemListEl.append(
-					this._createBasketItem(product, index.toString())
+					this._createBasketItem(product, (i + 1).toString())
 				);
 			});
 
@@ -138,7 +126,7 @@ export class BasketView extends BaseElementView implements TBasketView {
 	 * Создает DOM-элемент товара в корзине.
 	 * @private
 	 * @param data - Данные товара.
-	 * @param index - Индекс/количество товара.
+	 * @param index - Индекс товара.
 	 * @returns DOM-элемент товара.
 	 */
 	private _createBasketItem(data: Product, index: string) {
@@ -148,9 +136,8 @@ export class BasketView extends BaseElementView implements TBasketView {
 		) as DocumentFragment;
 		const titleEl = card.querySelector('.card__title');
 		const priceEl = card.querySelector('.card__price');
-		const indexEl = card.querySelector('.basket__item-index');
 		const deleteButton = card.querySelector('.basket__item-delete');
-
+		const indexEl = card.querySelector('.basket__item-index');
 		if (!indexEl || !priceEl || !titleEl || !deleteButton) {
 			throw new Error('Required card elements not found');
 		}
@@ -161,7 +148,6 @@ export class BasketView extends BaseElementView implements TBasketView {
 		titleEl.textContent = title;
 		priceEl.textContent = price ? `${price.toString()} синапсов` : 'Бесценно';
 		indexEl.textContent = index;
-
 		// Обработчик удаления товара
 		deleteButton.addEventListener('click', () => this.onBasketItemRemove(data));
 

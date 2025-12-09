@@ -44,8 +44,7 @@ export type BasketModel = {
 	getTotal: () => number;
 	getItemsCount: () => number;
 	clear: () => void;
-	getItemsMap: () => Map<string, number>;
-	getItemsArray: () => Product[];
+	getItems: () => Product[];
 };
 
 export type CatalogModel = {
@@ -92,11 +91,7 @@ export type BaseFormView = {
 };
 
 export type BasketView = {
-	render: (args: {
-		productsMap: Map<string, number>;
-		productsArray: Product[];
-		total: number;
-	}) => void;
+	render: (args: { products: Product[]; total: number }) => void;
 };
 
 export type BasketViewConstructor = {

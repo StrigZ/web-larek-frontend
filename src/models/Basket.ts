@@ -6,7 +6,6 @@ import { BasketModel, Product } from '../types';
  * @implements BasketModel
  */
 export class Basket implements BasketModel {
-	private items = new Map<string, number>();
 	private itemsArray: Product[] = [];
 	private onBasketChange: () => void;
 
@@ -28,13 +27,8 @@ export class Basket implements BasketModel {
 		return this.itemsArray.length;
 	}
 
-	/** Возвращает карту товаров (ID → количество). */
-	public getItemsMap() {
-		return this.items;
-	}
-
 	/** Возвращает массив всех товаров в корзине. */
-	public getItemsArray() {
+	public getItems() {
 		return this.itemsArray;
 	}
 
@@ -45,17 +39,10 @@ export class Basket implements BasketModel {
 	public add(product: Product) {
 		if (!product.price) return;
 
+		const doesExist = this.itemsArray.find(({ id }) => id === product.id);
+		if (doesExist) return;
+
 		this.itemsArray.push(product);
-
-		const doesExist = this.items.has(product.id);
-		if (doesExist) {
-			const currIndex = this.items.get(product.id);
-			if (!currIndex) return;
-
-			this.items.set(product.id, currIndex + 1);
-		} else {
-			this.items.set(product.id, 1);
-		}
 		this._changed();
 	}
 
@@ -64,32 +51,14 @@ export class Basket implements BasketModel {
 	 * @param product - Товар для удаления.
 	 */
 	public remove(product: Product) {
-		const idx = this.itemsArray.findIndex(({ id }) => id === product.id);
-		if (idx !== -1) {
-			this.itemsArray.splice(idx, 1);
-		}
-
-		const doesExist = this.items.has(product.id);
-		if (!doesExist) {
-			return;
-		}
-
-		const currIndex = this.items.get(product.id);
-		if (!currIndex) return;
-
-		if (currIndex === 1) {
-			this.items.delete(product.id);
-			this._changed();
-			return;
-		}
-
-		this.items.set(product.id, currIndex - 1);
+		this.itemsArray = this.itemsArray.filter(({ id }) => {
+			id !== product.id;
+		});
 		this._changed();
 	}
 
 	/** Очищает корзину. */
 	public clear() {
-		this.items = new Map<string, number>();
 		this.itemsArray = [];
 		this._changed();
 	}

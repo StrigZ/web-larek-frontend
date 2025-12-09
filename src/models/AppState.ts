@@ -64,7 +64,7 @@ export class AppState implements AppStateModel {
 			phone: this.orderDetails.phoneNumber,
 			payment: paymentVariant,
 			total: this.basket.getTotal(),
-			items: this.basket.getItemsArray().map(({ id }) => id),
+			items: this.basket.getItems().map(({ id }) => id),
 		};
 	}
 

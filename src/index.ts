@@ -110,9 +110,8 @@ function handlePreviewOpen({ product }: PreviewOpenEvent) {
 }
 function handleBasketChange() {
 	basketView.render({
-		productsArray: appState.getBasket().getItemsArray(),
+		products: appState.getBasket().getItems(),
 		total: appState.getBasket().getTotal(),
-		productsMap: appState.getBasket().getItemsMap(),
 	});
 	headerView.render(appState.getBasket().getItemsCount());
 }
