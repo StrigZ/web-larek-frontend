@@ -36,8 +36,6 @@ export type ProductCategory =
 	| 'хард-скил'
 	| 'другое';
 
-export type Basket = Map<Product['id'], number>;
-
 export type BasketModel = {
 	add: (product: Product) => void;
 	remove: (product: Product) => void;
@@ -45,6 +43,7 @@ export type BasketModel = {
 	getItemsCount: () => number;
 	clear: () => void;
 	getItems: () => Product[];
+	getItem: (id: string) => Product | undefined;
 };
 
 export type CatalogModel = {
@@ -104,7 +103,10 @@ export type CardDetails = {
 	render: (product: Product) => void;
 };
 
-export type CardDetailsConstructor = { onBasketAdd: (e: Event) => void };
+export type CardDetailsConstructor = {
+	onBasketAdd: (e: Event) => void;
+	isBasketButtonActive: boolean;
+};
 
 export type OrderForm = {
 	render: (details: OrderFormDetails) => void;

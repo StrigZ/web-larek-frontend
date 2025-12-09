@@ -33,6 +33,14 @@ export class Basket implements BasketModel {
 	}
 
 	/**
+	 * Возвращает товар из корзины корзину.
+	 * @param id - ID товара.
+	 */
+	public getItem(id: string) {
+		return this.itemsArray.find((product) => product.id === id);
+	}
+
+	/**
 	 * Добавляет товар в корзину.
 	 * @param product - Товар для добавления.
 	 */

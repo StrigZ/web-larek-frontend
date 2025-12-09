@@ -23,8 +23,9 @@ export class CardDetails extends BaseElementView implements TCardDetails {
 	/**
 	 * Создает экземпляр CardDetails.
 	 * @param onBasketAdd - Обработчик добавления товара в корзину.
+	 * @param isBasketButtonActive - Флаг для определения состояния кнопки добавления в корзину.
 	 */
-	constructor({ onBasketAdd }: CardDetailsConstructor) {
+	constructor({ onBasketAdd, isBasketButtonActive }: CardDetailsConstructor) {
 		super();
 
 		// Инициализация шаблона
@@ -39,7 +40,9 @@ export class CardDetails extends BaseElementView implements TCardDetails {
 		if (!cardDetailsEl) throw new Error('CardDetails: element not found');
 
 		// Поиск DOM-элементов
-		const addToBasketButton = cardDetailsEl.querySelector('.card__row button');
+		const addToBasketButton = cardDetailsEl.querySelector(
+			'.card__row button'
+		) as HTMLButtonElement | null;
 		const titleEl = cardDetailsEl.querySelector('.card__title');
 		const categoryEl = cardDetailsEl.querySelector('.card__category');
 		const imageEl = cardDetailsEl.querySelector(
@@ -58,7 +61,11 @@ export class CardDetails extends BaseElementView implements TCardDetails {
 			throw new Error('CardDetails: addToBasketButton not found');
 
 		// Настройка обработчиков
-		addToBasketButton.addEventListener('click', onBasketAdd);
+		if (isBasketButtonActive) {
+			addToBasketButton.addEventListener('click', onBasketAdd);
+		} else {
+			addToBasketButton.disabled = true;
+		}
 
 		// Сохранение ссылок
 		this.titleEl = titleEl;

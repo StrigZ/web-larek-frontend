@@ -134,8 +134,6 @@ yarn build
 }
 ```
 
-**Basket** - корзина (Map<Product['id'], number>)
-
 ### **Категории**
 
 **ProductCategory** - тип категории товара
@@ -187,8 +185,8 @@ yarn build
   - `getTotal(): number` – вычисляет общую стоимость корзины
   - `getItemsCount(): number` – возвращает количество товаров в корзине
   - `clear(): void` – очищает корзину
-  - `getItemsMap(): Map<string, number>` – возвращает карту товаров
-  - `getItemsArray(): Product[]` – возвращает массив товаров
+  - `getItems(): Product[]` – возвращает массив товаров
+  - `getItem(): Product | undefined` – возвращает товар по ID
 
 #### **CatalogModel**
 
@@ -266,6 +264,7 @@ yarn build
 - **Методы**:
   - `render(product: Product): void` – отрисовывает детали товара
 - **Параметры конструктора (события)**:
+  - `isBasketButtonActive: boolean` – флаг для определения состояния кнопки добавления в корзину.
   - `onBasketAdd: (e: Event) => void` – добавление товара в корзину
 
 ## **События приложения**

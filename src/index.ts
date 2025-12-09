@@ -103,6 +103,7 @@ function handlePreviewOpen({ product }: PreviewOpenEvent) {
 	const productData = appState.getCatalog().getItemById(product.id);
 	const cardDetails = new CardDetails({
 		onBasketAdd: () => appState.getEvents().emit('basket:add', { product }),
+		isBasketButtonActive: !appState.getBasket().getItem(product.id),
 	});
 	cardDetails.render(productData);
 	modalView.setContent(cardDetails.getElement());
@@ -117,6 +118,7 @@ function handleBasketChange() {
 }
 function handleBasketAdd({ product }: BasketAddEvent) {
 	appState.getBasket().add(product);
+	modalView.close();
 }
 function handleBasketRemove({ product }: BasketRemoveEvent) {
 	appState.getBasket().remove(product);
