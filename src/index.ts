@@ -185,7 +185,6 @@ function handleContactsFormSubmit({ details }: ContactsFormSubmitEvent) {
 
 	makePurchaseRequest(requestBody)
 		.then(() => {
-			appState.getBasket().getTotal();
 			orderConfirmationView.render(appState.getBasket().getTotal());
 			modalView.setContent(orderConfirmationView.getElement());
 
