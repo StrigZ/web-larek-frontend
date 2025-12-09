@@ -28,6 +28,7 @@ import { CardDetails } from './components/view/CardDetails';
 import { ContactsForm } from './components/view/ContactsForm';
 import { HeaderView } from './components/view/HeaderView';
 import { ModalView } from './components/view/ModalView';
+import { BasketItemView } from './components/view/BasketItemView';
 
 const appState = new AppState(
 	new Basket({
@@ -40,10 +41,14 @@ const appState = new AppState(
 const modalView = new ModalView();
 
 const headerView = new HeaderView();
+
+const basketItemView = new BasketItemView({
+	onDelete: (product) =>
+		appState.getEvents().emit<BasketRemoveEvent>('basket:remove', { product }),
+});
+
 const basketView = new BasketView({
 	onStartOrder: () => appState.getEvents().emit('order:open'),
-	onBasketItemRemove: (product) =>
-		appState.getEvents().emit<BasketRemoveEvent>('basket:remove', { product }),
 	onBasketOpen: () => appState.getEvents().emit('basket:open'),
 });
 
@@ -110,8 +115,10 @@ function handlePreviewOpen({ product }: PreviewOpenEvent) {
 	modalView.open();
 }
 function handleBasketChange() {
+	const basketItems = appState.getBasket().getItems();
+
 	basketView.render({
-		products: appState.getBasket().getItems(),
+		products: basketItemView.createBasketItems(basketItems),
 		total: appState.getBasket().getTotal(),
 	});
 	headerView.render(appState.getBasket().getItemsCount());

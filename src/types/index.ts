@@ -90,12 +90,11 @@ export type BaseFormView = {
 };
 
 export type BasketView = {
-	render: (args: { products: Product[]; total: number }) => void;
+	render: (args: { products: Element[]; total: number }) => void;
 };
 
 export type BasketViewConstructor = {
 	onStartOrder: (e: Event) => void;
-	onBasketItemRemove: (product: Product) => void;
 	onBasketOpen: () => void;
 };
 

@@ -208,14 +208,22 @@ yarn build
 
 ### **Компоненты отображения**
 
+#### **BasketItemView**
+
+- **Назначение**: Cоздания элементов товаров в корзине
+- **Методы**:
+  - `createBasketItems(products: Product[]): Element[]` – Создает массив DOM-элементов товаров для корзины.
+  - `createBasketItem(product: Product, index: string): Element` – Создает DOM-элемент для одного товара в корзине.
+- **Параметры конструктора (события)**:
+  - `onDelete: (product: Product) => void` – Обработчик удаления товара из корзины.
+
 #### **BasketView**
 
 - **Назначение**: Отображение корзины покупок
 - **Методы**:
-  - `render(args: { productsMap: Map<string, number>, productsArray: Product[], total: number }): void` – отрисовывает корзину
+  - `render(args: { products: Product[], total: number }): void` – отрисовывает корзину
 - **Параметры конструктора (события)**:
   - `onStartOrder: (e: Event) => void` – начало оформления заказа
-  - `onBasketItemRemove: (product: Product) => void` – удаление товара из корзины
   - `onBasketOpen: () => void` – открытие корзины
 
 #### **OrderForm**

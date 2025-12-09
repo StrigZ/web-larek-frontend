@@ -1,8 +1,4 @@
-import {
-	BasketViewConstructor,
-	Product,
-	BasketView as TBasketView,
-} from '../../types';
+import { BasketViewConstructor, BasketView as TBasketView } from '../../types';
 import { BaseElementView } from '../base/BaseElementView';
 
 /**
@@ -13,23 +9,16 @@ import { BaseElementView } from '../base/BaseElementView';
  */
 export class BasketView extends BaseElementView implements TBasketView {
 	protected baseElement;
-	private cardTemplateEl: HTMLTemplateElement;
 	private itemListEl: Element;
 	private totalPriceEl: Element;
 	private goToOrderButton: HTMLButtonElement;
-	private onBasketItemRemove: (product: Product) => void;
 
 	/**
 	 * Создает экземпляр BasketView.
 	 * @param onStartOrder - Обработчик начала оформления заказа.
-	 * @param onBasketItemRemove - Обработчик удаления товара из корзины.
 	 * @param onBasketOpen - Обработчик открытия корзины.
 	 */
-	constructor({
-		onStartOrder,
-		onBasketItemRemove,
-		onBasketOpen,
-	}: BasketViewConstructor) {
+	constructor({ onStartOrder, onBasketOpen }: BasketViewConstructor) {
 		super();
 		// Инициализация DOM-элементов
 		const basketTemplate = document.querySelector(
@@ -88,28 +77,23 @@ export class BasketView extends BaseElementView implements TBasketView {
 
 		// Сохранение ссылок на элементы
 		this.baseElement = basketEl;
-		this.cardTemplateEl = cardTemplateEl;
 		this.itemListEl = itemListEl;
 		this.totalPriceEl = totalPriceEl;
 		this.goToOrderButton = goToOrderButton;
-		this.onBasketItemRemove = onBasketItemRemove;
 	}
 
 	/**
 	 * Отображает корзину с товарами.
-	 * @param products - Карта товаров и их количества.
+	 * @param products - Массив элементов.
 	 * @param total - Общая стоимость корзины.
 	 */
-	public render({ products, total }: { products: Product[]; total: number }) {
+	public render({ products, total }: { products: Element[]; total: number }) {
 		this.itemListEl.innerHTML = '';
-		const uniqueItemsArray = Array.from(new Set(products));
 
 		if (total > 0) {
 			// Отображение товаров в корзине
-			uniqueItemsArray.forEach((product, i) => {
-				return this.itemListEl.append(
-					this._createBasketItem(product, (i + 1).toString())
-				);
+			products.forEach((product) => {
+				return this.itemListEl.append(product);
 			});
 
 			this.totalPriceEl.textContent = `${total.toString()} синапсов`;
@@ -120,37 +104,5 @@ export class BasketView extends BaseElementView implements TBasketView {
 			this.itemListEl.textContent = 'Корзина пуста!';
 			this.goToOrderButton.disabled = true;
 		}
-	}
-
-	/**
-	 * Создает DOM-элемент товара в корзине.
-	 * @private
-	 * @param data - Данные товара.
-	 * @param index - Индекс товара.
-	 * @returns DOM-элемент товара.
-	 */
-	private _createBasketItem(data: Product, index: string) {
-		const { price, title } = data;
-		const card = this.cardTemplateEl.content.cloneNode(
-			true
-		) as DocumentFragment;
-		const titleEl = card.querySelector('.card__title');
-		const priceEl = card.querySelector('.card__price');
-		const deleteButton = card.querySelector('.basket__item-delete');
-		const indexEl = card.querySelector('.basket__item-index');
-		if (!indexEl || !priceEl || !titleEl || !deleteButton) {
-			throw new Error('Required card elements not found');
-		}
-
-		const cardElement = card.querySelector('.card') as HTMLElement;
-
-		// Заполнение данными
-		titleEl.textContent = title;
-		priceEl.textContent = price ? `${price.toString()} синапсов` : 'Бесценно';
-		indexEl.textContent = index;
-		// Обработчик удаления товара
-		deleteButton.addEventListener('click', () => this.onBasketItemRemove(data));
-
-		return cardElement;
 	}
 }
