@@ -29,6 +29,7 @@ import { ContactsForm } from './components/view/ContactsForm';
 import { HeaderView } from './components/view/HeaderView';
 import { ModalView } from './components/view/ModalView';
 import { BasketItemView } from './components/view/BasketItemView';
+import { GalleryItemView } from './components/view/GalleryItemView';
 
 const appState = new AppState(
 	new Basket({
@@ -52,10 +53,12 @@ const basketView = new BasketView({
 	onBasketOpen: () => appState.getEvents().emit('basket:open'),
 });
 
-const galleryView = new GalleryView({
-	onCardClick: (product) =>
+const galleryItemView = new GalleryItemView({
+	onItemClick: (product) =>
 		appState.getEvents().emit<PreviewOpenEvent>('details:open', { product }),
 });
+
+const galleryView = new GalleryView();
 
 const orderForm = new OrderForm({
 	onSubmit: (details) =>
@@ -197,6 +200,6 @@ fetchProducts()
 	.then((products) => {
 		const { items } = products;
 		appState.getCatalog().setItems(items);
-		galleryView.render(items);
+		galleryView.render(galleryItemView.createGalleryItems(items));
 	})
 	.catch((e) => console.error(e));

@@ -137,12 +137,17 @@ export type HeaderView = {
 	render: (totalItemsCount: number) => void;
 };
 
-export type GalleryView = {
-	render: (items: Product[]) => void;
+export type GalleryItemView = {
+	createGalleryItems: (product: Product[]) => Element[];
+	createGalleryItem: (product: Product) => Element;
 };
 
-export type GalleryViewConstructor = {
-	onCardClick: (product: Product) => void;
+export type GalleryItemViewConstructor = {
+	onItemClick: (product: Product) => void;
+};
+
+export type GalleryView = {
+	render: (products: Element[]) => void;
 };
 
 export type PreviewOpenEvent = { product: Product };

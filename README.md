@@ -244,13 +244,20 @@ yarn build
   - `onSubmit: (details: ContactsFormDetails) => void` – отправка формы
   - `onOrderDetailsChange: (details: ContactsFormDetails) => void` – изменение данных формы
 
+#### **GalleryItemView**
+
+- **Назначение**: Cоздания элементов товаров для галереи
+- **Методы**:
+  - `createGalleryItems(products: Product[]): Element[]` – Создает массив DOM-элементов товаров .
+  - `createGalleryItem(product: Product, index: string): Element` – Создает DOM-элемент для одного товара.
+- **Параметры конструктора (события)**:
+  - `onItemClick: (product: Product) => void` – Обработчик клика по товару.
+
 #### **GalleryView**
 
 - **Назначение**: Отображение каталога товаров
 - **Методы**:
   - `render(items: Product[]): void` – отрисовывает галерею товаров
-- **Параметры конструктора (события)**:
-  - `onCardClick: (product: Product) => void` – клик по карточке товара
 
 #### **HeaderView**
 
