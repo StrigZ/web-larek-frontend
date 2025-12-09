@@ -67,6 +67,7 @@ export type AppStateModel = {
 	getCatalog: () => CatalogModel;
 	getEvents: () => EventEmitter;
 	setOrderDetails: (details: OrderFormDetails | ContactsFormDetails) => void;
+	getValidationError: () => string;
 };
 
 export type OrderFormDetails = Pick<OrderDetails, 'paymentVariant' | 'address'>;
@@ -165,13 +166,7 @@ export type BasketRemoveEvent = { product: Product };
 export type OrderFormChangeEvent = {
 	details: OrderFormDetails;
 };
-export type OrderFormSubmitEvent = {
-	details: OrderFormDetails;
-};
 export type ContactsFormChangeEvent = {
-	details: ContactsFormDetails;
-};
-export type ContactsFormSubmitEvent = {
 	details: ContactsFormDetails;
 };
 

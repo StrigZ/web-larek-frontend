@@ -6,7 +6,6 @@ import {
 	OrderDetails,
 	OrderRequestBody,
 } from '../types';
-import { DEFAULT_ORDER_DETAILS } from '../utils/constants';
 
 /**
  * Класс центрального состояния приложения.
@@ -17,7 +16,7 @@ export class AppState implements AppStateModel {
 	private catalog: CatalogModel;
 	private events: EventEmitter;
 	private basket: BasketModel;
-	private orderDetails: OrderDetails;
+	private orderDetails: Partial<OrderDetails>;
 
 	/**
 	 * Создает экземпляр AppState.
@@ -33,7 +32,7 @@ export class AppState implements AppStateModel {
 		this.basket = basket;
 		this.events = events;
 		this.catalog = catalog;
-		this.orderDetails = DEFAULT_ORDER_DETAILS;
+		this.orderDetails = { paymentVariant: 'Онлайн' };
 	}
 
 	/** Возвращает модель корзины. */
@@ -60,8 +59,9 @@ export class AppState implements AppStateModel {
 			this.orderDetails.paymentVariant === 'Онлайн' ? 'online' : 'cash';
 
 		return {
-			...this.orderDetails,
-			phone: this.orderDetails.phoneNumber,
+			address: this.orderDetails.address ?? '',
+			email: this.orderDetails.email ?? '',
+			phone: this.orderDetails.phoneNumber ?? '',
 			payment: paymentVariant,
 			total: this.basket.getTotal(),
 			items: this.basket.getItems().map(({ id }) => id),
@@ -74,5 +74,22 @@ export class AppState implements AppStateModel {
 	 */
 	public setOrderDetails(details: Partial<OrderDetails>) {
 		this.orderDetails = { ...this.orderDetails, ...details };
+	}
+
+	/**
+	 * Валидирует данные заказа и возвращает текст ошибки
+	 */
+	public getValidationError() {
+		if (this.orderDetails.address?.trim() === '') {
+			return 'Адрес не может быть пустым!';
+		}
+		if (this.orderDetails.email?.trim() === '') {
+			return 'Email не может быть пустым';
+		}
+		if (this.orderDetails.phoneNumber?.trim() === '') {
+			return 'Номер телефона не может быть пустым!';
+		}
+
+		return '';
 	}
 }

@@ -5,10 +5,8 @@ import type {
 	BasketRemoveEvent,
 	ConfirmPurchaseResponse,
 	ContactsFormChangeEvent,
-	ContactsFormSubmitEvent,
 	GetItemsResponse,
 	OrderFormChangeEvent,
-	OrderFormSubmitEvent,
 	OrderRequestBody,
 	PreviewOpenEvent,
 } from './types';
@@ -61,10 +59,7 @@ const galleryItemView = new GalleryItemView({
 const galleryView = new GalleryView();
 
 const orderForm = new OrderForm({
-	onSubmit: (details) =>
-		appState
-			.getEvents()
-			.emit<OrderFormSubmitEvent>('order:submit', { details }),
+	onSubmit: () => appState.getEvents().emit('order:submit'),
 	onOrderDetailsChange: (details) =>
 		appState
 			.getEvents()
@@ -72,8 +67,7 @@ const orderForm = new OrderForm({
 });
 
 const contactsForm = new ContactsForm({
-	onSubmit: (details) =>
-		appState.getEvents().emit('contacts:submit', { details }),
+	onSubmit: () => appState.getEvents().emit('contacts:submit'),
 	onOrderDetailsChange: (details) =>
 		appState.getEvents().emit<ContactsFormChangeEvent>('contacts:change', {
 			details,
@@ -95,17 +89,13 @@ appState.getEvents().on('order:open', handleOrderFormOpen);
 appState
 	.getEvents()
 	.on<OrderFormChangeEvent>('order:change', handleOrderFormChange);
-appState
-	.getEvents()
-	.on<OrderFormSubmitEvent>('order:submit', handleOrderFormSubmit);
+appState.getEvents().on('order:submit', handleOrderFormSubmit);
 
 appState.getEvents().on('contacts:open', handleContactsFormOpen);
 appState
 	.getEvents()
 	.on<ContactsFormChangeEvent>('contacts:change', handleContactsFormChange);
-appState
-	.getEvents()
-	.on<ContactsFormSubmitEvent>('contacts:submit', handleContactsFormSubmit);
+appState.getEvents().on('contacts:submit', handleContactsFormSubmit);
 
 function handlePreviewOpen({ product }: PreviewOpenEvent) {
 	const productData = appState.getCatalog().getItemById(product.id);
@@ -145,17 +135,13 @@ function handleOrderFormOpen() {
 function handleOrderFormChange({ details }: OrderFormChangeEvent) {
 	orderForm.render(details);
 	modalView.setContent(orderForm.getElement());
-
-	orderForm.setSubmitButtonStatus(false);
-	if (!details.address.trim()) {
-		orderForm.setError('Адрес не может быть пустым!');
-		return;
-	}
-	orderForm.setError('');
-	orderForm.setSubmitButtonStatus(true);
-}
-function handleOrderFormSubmit({ details }: OrderFormSubmitEvent) {
 	appState.setOrderDetails(details);
+
+	const errorMessage = appState.getValidationError();
+	orderForm.setSubmitButtonStatus(!errorMessage);
+	orderForm.setError(errorMessage);
+}
+function handleOrderFormSubmit() {
 	appState.getEvents().emit('contacts:open');
 }
 function handleContactsFormOpen() {
@@ -166,21 +152,13 @@ function handleContactsFormOpen() {
 function handleContactsFormChange({ details }: ContactsFormChangeEvent) {
 	contactsForm.render(details);
 	modalView.setContent(contactsForm.getElement());
-
-	contactsForm.setSubmitButtonStatus(false);
-	if (!details.email.trim()) {
-		contactsForm.setError('Email не может быть пустым!');
-		return;
-	}
-	if (!details.phoneNumber.trim()) {
-		contactsForm.setError('Номер телефона не может быть пустым!');
-		return;
-	}
-	contactsForm.setError('');
-	contactsForm.setSubmitButtonStatus(true);
-}
-function handleContactsFormSubmit({ details }: ContactsFormSubmitEvent) {
 	appState.setOrderDetails(details);
+
+	const errorMessage = appState.getValidationError();
+	contactsForm.setSubmitButtonStatus(!errorMessage);
+	contactsForm.setError(errorMessage);
+}
+function handleContactsFormSubmit() {
 	const requestBody = appState.getOrderRequestBody();
 
 	makePurchaseRequest(requestBody)

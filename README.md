@@ -205,6 +205,7 @@ yarn build
   - `getCatalog(): CatalogModel` – возвращает модель каталога
   - `getEvents(): EventEmitter` – возвращает шину событий
   - `setOrderDetails(details: OrderFormDetails | ContactsFormDetails): void` – обновляет данные заказа
+  - `getValidationError(): string` – валидирует детали заказа и возвращает текст ошибки
 
 ### **Компоненты отображения**
 
@@ -328,12 +329,6 @@ yarn build
 
 - **order:submit** - отправка формы заказа
 
-```typescript
-{
-	details: OrderFormDetails;
-}
-```
-
 ### **Контактные данные**
 
 - **contacts:open** - открытие формы контактов (без данных)
@@ -346,9 +341,3 @@ yarn build
 ```
 
 - **contacts:submit** - отправка формы контактов
-
-```typescript
-{
-	details: ContactsFormDetails;
-}
-```
