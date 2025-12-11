@@ -1,11 +1,16 @@
-import { BasketViewItemConstructor, Product } from '../../types';
+import {
+	BasketItemViewConstructor,
+	Product,
+	BasketItemView as TBasketItemView,
+} from '../../types';
 import { BaseElementView } from '../base/BaseElementView';
 
 /**
  * Класс отображения элементов корзины.
  * @extends BaseElementView
+ * @implements TBasketItemView
  */
-export class BasketItemView extends BaseElementView {
+export class BasketItemView extends BaseElementView implements TBasketItemView {
 	protected baseElement: Element;
 	private onDelete: (product: Product) => void;
 
@@ -15,7 +20,7 @@ export class BasketItemView extends BaseElementView {
 	 * Создает экземпляр BasketItemView.
 	 * @param onDelete - Обработчик удаления товара из корзины.
 	 */
-	constructor({ onDelete }: BasketViewItemConstructor) {
+	constructor({ onDelete }: BasketItemViewConstructor) {
 		super();
 
 		// Если шаблона нет в кеше, то кешируем его

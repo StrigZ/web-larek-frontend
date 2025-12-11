@@ -1,24 +1,45 @@
-import { GalleryItemViewConstructor, Product } from '../../types';
+import {
+	GalleryItemViewConstructor,
+	Product,
+	GalleryItemView as TGalleryItemView,
+} from '../../types';
 import { CDN_URL } from '../../utils/constants';
 import { BaseElementView } from '../base/BaseElementView';
 
 /**
  * Класс отображения элементов галерии.
  * @extends BaseElementView
+ * @implements TGalleryItemView
  */
-export class GalleryItemView extends BaseElementView {
+export class GalleryItemView
+	extends BaseElementView
+	implements TGalleryItemView
+{
 	protected baseElement: Element;
 	private onItemClick: (product: Product) => void;
+
+	private static template: HTMLTemplateElement | null;
 
 	/**
 	 * Создает экземпляр GalleryItemView.
 	 * @param onItemClick - Обработчик клика по товару в галерее.
-	 * @param template - Шаблон элемента
 	 */
-	constructor({ onItemClick, template }: GalleryItemViewConstructor) {
+	constructor({ onItemClick }: GalleryItemViewConstructor) {
 		super();
 
-		const clone = template.content.cloneNode(true) as DocumentFragment;
+		// Если шаблона нет в кеше, то кешируем его
+		if (!GalleryItemView.template) {
+			const template = document.querySelector(
+				'#card-catalog'
+			) as HTMLTemplateElement | null;
+			if (!template)
+				throw new Error('GalleryItemView: template was not found!');
+			GalleryItemView.template = template;
+		}
+
+		const clone = GalleryItemView.template.content.cloneNode(
+			true
+		) as DocumentFragment;
 		const galleryItem = clone.firstElementChild;
 		if (!galleryItem)
 			throw new Error(

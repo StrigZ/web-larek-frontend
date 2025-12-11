@@ -90,11 +90,11 @@ export type BaseFormView = {
 	setSubmitButtonStatus: (isActive: boolean) => void;
 };
 
-export type BasketViewItem = {
+export type BasketItemView = {
 	render(product: Product, index: string): void;
 };
 
-export type BasketViewItemConstructor = {
+export type BasketItemViewConstructor = {
 	onDelete: (product: Product) => void;
 };
 
@@ -146,8 +146,10 @@ export type HeaderView = {
 	render: (totalItemsCount: number) => void;
 };
 
+export type GalleryItemView = {
+	render: (product: Product) => void;
+};
 export type GalleryItemViewConstructor = {
-	template: HTMLTemplateElement;
 	onItemClick: (product: Product) => void;
 };
 

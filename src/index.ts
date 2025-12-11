@@ -185,17 +185,8 @@ fetchProducts()
 		const { items } = products;
 		appState.getCatalog().setItems(items);
 
-		// Ищем шаблон карточки товара тут, а не внутри представления,
-		// чтобы не искать его каждый раз при создании экземпляра
-		const galleryItemTemplate = document.querySelector(
-			'#card-catalog'
-		) as HTMLTemplateElement | null;
-		if (!galleryItemTemplate)
-			throw new Error('galleryItemTemplate was not found!');
-
 		const galleryItems = items.map((item) => {
 			const galleryItemView = new GalleryItemView({
-				template: galleryItemTemplate,
 				onItemClick: (product) =>
 					appState
 						.getEvents()
