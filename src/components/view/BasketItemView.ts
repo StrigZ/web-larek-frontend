@@ -14,7 +14,7 @@ export class BasketItemView extends BaseElementView implements TBasketItemView {
 	protected baseElement: Element;
 	private onDelete: (product: Product) => void;
 
-	private static template: HTMLTemplateElement | null;
+	private static template: HTMLTemplateElement | null = null;
 
 	/**
 	 * Создает экземпляр BasketItemView.

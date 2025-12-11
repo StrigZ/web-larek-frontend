@@ -18,7 +18,7 @@ export class GalleryItemView
 	protected baseElement: Element;
 	private onItemClick: (product: Product) => void;
 
-	private static template: HTMLTemplateElement | null;
+	private static template: HTMLTemplateElement | null = null;
 
 	/**
 	 * Создает экземпляр GalleryItemView.
