@@ -247,12 +247,12 @@ yarn build
 
 #### **GalleryItemView**
 
-- **Назначение**: Cоздания элементов товаров для галереи
+- **Назначение**: Отображение элемента каталога товаров
 - **Методы**:
-  - `createGalleryItems(products: Product[]): Element[]` – Создает массив DOM-элементов товаров .
-  - `createGalleryItem(product: Product, index: string): Element` – Создает DOM-элемент для одного товара.
+  - `render(product: Product)` – отрисовывает элемент
 - **Параметры конструктора (события)**:
   - `onItemClick: (product: Product) => void` – Обработчик клика по товару.
+  - `template: HTMLTemplateELement` – шаблон элемента.
 
 #### **GalleryView**
 

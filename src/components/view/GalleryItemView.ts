@@ -1,67 +1,47 @@
-import {
-	GalleryItemViewConstructor,
-	Product,
-	GalleryItemView as TGalleryItemView,
-} from '../../types';
+import { GalleryItemViewConstructor, Product } from '../../types';
 import { CDN_URL } from '../../utils/constants';
+import { BaseElementView } from '../base/BaseElementView';
 
 /**
- * Класс для создания элементов галереи товаров.
- * Генерирует DOM-элементы для отображения товаров в каталоге.
+ * Класс отображения элементов галерии.
+ * @extends BaseElementView
  */
-export class GalleryItemView implements TGalleryItemView {
-	private template: HTMLTemplateElement;
+export class GalleryItemView extends BaseElementView {
+	protected baseElement: Element;
 	private onItemClick: (product: Product) => void;
 
 	/**
 	 * Создает экземпляр GalleryItemView.
 	 * @param onItemClick - Обработчик клика по товару в галерее.
+	 * @param template - Шаблон элемента
 	 */
-	constructor({ onItemClick }: GalleryItemViewConstructor) {
-		const template = document.querySelector(
-			'#card-catalog'
-		) as HTMLTemplateElement | null;
-		if (!template) throw new Error('GalleryItemView: template was not found!');
+	constructor({ onItemClick, template }: GalleryItemViewConstructor) {
+		super();
 
-		this.template = template;
-		this.onItemClick = onItemClick;
-	}
-
-	/**
-	 * Создает массив DOM-элементов товаров для галереи.
-	 * @param products - Массив товаров для отображения.
-	 * @returns Массив DOM-элементов товаров.
-	 */
-	public createGalleryItems(products: Product[]) {
-		const galleryItemsView: Element[] = [];
-		products.forEach((item) =>
-			galleryItemsView.push(this.createGalleryItem(item))
-		);
-		return galleryItemsView;
-	}
-
-	/**
-	 * Создает DOM-элемент для одного товара в галерее.
-	 * @param product - Данные товара.
-	 * @returns DOM-элемент товара.
-	 */
-	public createGalleryItem(product: Product) {
-		const clone = this.template.content.cloneNode(true) as DocumentFragment;
+		const clone = template.content.cloneNode(true) as DocumentFragment;
 		const galleryItem = clone.firstElementChild;
-
 		if (!galleryItem)
 			throw new Error(
 				'GalleryItemView: galleryItem was not found inside template!'
 			);
 
+		this.onItemClick = onItemClick;
+		this.baseElement = galleryItem;
+	}
+
+	/**
+	 * Орисовывает элемент
+	 * @param product - данные о товаре.
+	 */
+	public render(product: Product) {
 		const { category, image, price, title } = product;
 
-		const titleEl = galleryItem.querySelector('.card__title');
-		const categoryEl = galleryItem.querySelector('.card__category');
-		const imageEl = galleryItem.querySelector(
+		const titleEl = this.baseElement.querySelector('.card__title');
+		const categoryEl = this.baseElement.querySelector('.card__category');
+		const imageEl = this.baseElement.querySelector(
 			'.card__image'
 		) as HTMLImageElement | null;
-		const priceEl = galleryItem.querySelector('.card__price');
+		const priceEl = this.baseElement.querySelector('.card__price');
 
 		if (!categoryEl || !imageEl || !priceEl || !titleEl) {
 			throw new Error('GalleryItemView: required card elements were not found');
@@ -74,8 +54,6 @@ export class GalleryItemView implements TGalleryItemView {
 		priceEl.textContent = price ? `${price.toString()} синапсов` : 'Бесценно';
 
 		// Обработчик клика по товару
-		galleryItem.addEventListener('click', () => this.onItemClick(product));
-
-		return galleryItem;
+		this.baseElement.addEventListener('click', () => this.onItemClick(product));
 	}
 }

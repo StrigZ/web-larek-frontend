@@ -147,12 +147,8 @@ export type HeaderView = {
 	render: (totalItemsCount: number) => void;
 };
 
-export type GalleryItemView = {
-	createGalleryItems: (product: Product[]) => Element[];
-	createGalleryItem: (product: Product) => Element;
-};
-
 export type GalleryItemViewConstructor = {
+	template: HTMLTemplateElement;
 	onItemClick: (product: Product) => void;
 };
 

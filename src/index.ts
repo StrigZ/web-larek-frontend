@@ -51,11 +51,6 @@ const basketView = new BasketView({
 	onBasketOpen: () => appState.getEvents().emit('basket:open'),
 });
 
-const galleryItemView = new GalleryItemView({
-	onItemClick: (product) =>
-		appState.getEvents().emit<PreviewOpenEvent>('details:open', { product }),
-});
-
 const galleryView = new GalleryView();
 
 const orderForm = new OrderForm({
@@ -183,6 +178,27 @@ fetchProducts()
 	.then((products) => {
 		const { items } = products;
 		appState.getCatalog().setItems(items);
-		galleryView.render(galleryItemView.createGalleryItems(items));
+
+		// Ищем шаблон карточки товара тут, а не внутри представления,
+		// чтобы не искать его каждый раз при создании экземпляра
+		const galleryItemTemplate = document.querySelector(
+			'#card-catalog'
+		) as HTMLTemplateElement | null;
+		if (!galleryItemTemplate)
+			throw new Error('galleryItemTemplate was not found!');
+
+		const galleryItems = items.map((item) => {
+			const galleryItemView = new GalleryItemView({
+				template: galleryItemTemplate,
+				onItemClick: (product) =>
+					appState
+						.getEvents()
+						.emit<PreviewOpenEvent>('details:open', { product }),
+			});
+			galleryItemView.render(item);
+			return galleryItemView.getElement();
+		});
+
+		galleryView.render(galleryItems);
 	})
 	.catch((e) => console.error(e));
