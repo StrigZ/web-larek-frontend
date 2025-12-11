@@ -41,11 +41,6 @@ const modalView = new ModalView();
 
 const headerView = new HeaderView();
 
-const basketItemView = new BasketItemView({
-	onDelete: (product) =>
-		appState.getEvents().emit<BasketRemoveEvent>('basket:remove', { product }),
-});
-
 const basketView = new BasketView({
 	onStartOrder: () => appState.getEvents().emit('order:open'),
 	onBasketOpen: () => appState.getEvents().emit('basket:open'),
@@ -104,9 +99,20 @@ function handlePreviewOpen({ product }: PreviewOpenEvent) {
 }
 function handleBasketChange() {
 	const basketItems = appState.getBasket().getItems();
+	const basketItemsElements = basketItems.map((item, i) => {
+		const basketItemView = new BasketItemView({
+			onDelete: (product) =>
+				appState
+					.getEvents()
+					.emit<BasketRemoveEvent>('basket:remove', { product }),
+		});
+
+		basketItemView.render(item, (i + 1).toString());
+		return basketItemView.getElement();
+	});
 
 	basketView.render({
-		products: basketItemView.createBasketItems(basketItems),
+		products: basketItemsElements,
 		total: appState.getBasket().getTotal(),
 	});
 	headerView.render(appState.getBasket().getItemsCount());

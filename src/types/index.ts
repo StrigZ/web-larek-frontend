@@ -91,8 +91,7 @@ export type BaseFormView = {
 };
 
 export type BasketViewItem = {
-	createBasketItems: (products: Product[]) => Element[];
-	createBasketItem: (product: Product, index: string) => Element;
+	render(product: Product, index: string): void;
 };
 
 export type BasketViewItemConstructor = {
