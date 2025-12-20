@@ -1,0 +1,21 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      API_ORIGIN: ${{ secrets.API_ORIGIN }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build
+        run: |
+          echo "API_ORIGIN=$API_ORIGIN" >> .env
+          npm install
+          npm run build
