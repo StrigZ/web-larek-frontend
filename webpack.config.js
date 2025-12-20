@@ -23,6 +23,7 @@ const config = {
 	devtool: 'source-map',
 	output: {
 		path: path.resolve(__dirname, 'dist'),
+		publicPath: 'web-larek-frontend'
 	},
 	devServer: {
 		open: true,
@@ -31,6 +32,9 @@ const config = {
 		hot: true,
 	},
 	plugins: [
+		new webpack.DefinePlugin({
+   		'process.env.API_BASE_URL': JSON.stringify(process.env.API_BASE_URL)
+  		}),		
 		new HtmlWebpackPlugin({
 			template: 'src/pages/index.html',
 		}),
