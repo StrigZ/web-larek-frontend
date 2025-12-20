@@ -1,7 +1,6 @@
 // Generated using webpack-cli https://github.com/webpack/webpack-cli
 
 const path = require('path');
-const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { DefinePlugin } = require('webpack');
@@ -24,7 +23,6 @@ const config = {
 	devtool: 'source-map',
 	output: {
 		path: path.resolve(__dirname, 'dist'),
-		publicPath: 'web-larek-frontend'
 	},
 	devServer: {
 		open: true,
@@ -32,10 +30,7 @@ const config = {
 		watchFiles: ['src/pages/*.html'],
 		hot: true,
 	},
-	plugins: [
-		new webpack.DefinePlugin({
-   		'process.env.API_BASE_URL': JSON.stringify(process.env.API_BASE_URL)
-  		}),		
+	plugins: [			
 		new HtmlWebpackPlugin({
 			template: 'src/pages/index.html',
 		}),
